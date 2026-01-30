@@ -349,40 +349,90 @@
         ]);
     }
 
-    // ============================================
-    // DASHBOARD - BUG FIX #1: PERHITUNGAN TERSEDIA
-    // ============================================
-    async function loadDashboard() {
-        try {
-            const [carsRes, rentalsRes] = await Promise.all([
-                supabase.from('mobil').select('id, status'),
-                supabase.from('penyewaan').select('id, totalharga, status')
-            ]);
+   // ============================================
+// DASHBOARD
+// ============================================
+async function loadDashboard() {
+    try {
+        const [carsRes, rentalsRes] = await Promise.all([
+            supabase.from('mobil').select('id, status'),
+            supabase.from('penyewaan').select(`
+                id,
+                invoice,
+                tanggalsewa,
+                tanggalkembali,
+                totalharga,
+                status,
+                created_at,
+                pelanggan:pelangganid(nama),
+                mobil:mobilid(nama)
+            `).order('created_at', { ascending: false }).limit(5) // Ambil 5 transaksi terakhir
+        ]);
 
-            const cars = carsRes.data || [];
-            const rentals = rentalsRes.data || [];
+        const cars = carsRes.data || [];
+        const rentals = rentalsRes.data || [];
 
-            const totalMobil = cars.length;
-            
-            // 🔧 BUG FIX: Filter yang benar
-            const disewa = cars.filter(c => c.status === 'disewa').length;
-            const tersedia = totalMobil - disewa; // ✅ 11 - 2 = 9 (BENAR!)
-            
-            const pendapatan = rentals
-                .filter(r => r.status === 'Selesai' || r.status === 'Sedang Berlangsung')
-                .reduce((sum, r) => sum + (Number(r.totalharga) || 0), 0);
+        const totalMobil = cars.length;
+        
+        // Perhitungan yang benar
+        const disewa = cars.filter(c => c.status === 'disewa').length;
+        const tersedia = totalMobil - disewa;
+        
+        // Hitung total pendapatan dari transaksi yang sudah selesai atau sedang berlangsung
+        const pendapatan = rentals
+            .filter(r => r.status === 'Selesai' || r.status === 'Sedang Berlangsung')
+            .reduce((sum, r) => sum + (Number(r.totalharga) || 0), 0);
 
-            const stats = document.querySelectorAll('.stat-card .stat-info h3');
-            if (stats[0]) stats[0].textContent = totalMobil;
-            if (stats[1]) stats[1].textContent = tersedia;
-            if (stats[2]) stats[2].textContent = disewa;
-            if (stats[3]) stats[3].textContent = formatCurrency(pendapatan);
+        // Update stat cards
+        const stats = document.querySelectorAll('.stat-card .stat-info h3');
+        if (stats[0]) stats[0].textContent = totalMobil;
+        if (stats[1]) stats[1].textContent = tersedia;
+        if (stats[2]) stats[2].textContent = disewa;
+        if (stats[3]) stats[3].textContent = formatCurrency(pendapatan);
 
-            console.log('✅ Dashboard loaded - Total:', totalMobil, 'Tersedia:', tersedia, 'Disewa:', disewa);
-        } catch (err) {
-            console.error('❌ Load dashboard error:', err);
+        // ✅ FIX: Update tabel transaksi terbaru di dashboard
+        const dashboardTbody = document.querySelector('#page-dashboard table tbody');
+        if (dashboardTbody) {
+            if (!rentals || rentals.length === 0) {
+                // Tampilkan empty state
+                dashboardTbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 40px; color: #6c757d;">
+                            <div style="font-size: 48px; margin-bottom: 10px;">📊</div>
+                            <strong>Belum Ada Transaksi</strong><br>
+                            <small>Transaksi penyewaan akan muncul di sini</small>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                // Tampilkan data transaksi
+                dashboardTbody.innerHTML = rentals.map(r => `
+                    <tr>
+                        <td><strong style="color: var(--primary);">${r.invoice}</strong></td>
+                        <td>
+                            <div class="table-user">
+                                <div class="table-user-avatar">${avatarFromName(r.pelanggan?.nama || 'N/A')}</div>
+                                <span>${r.pelanggan?.nama || '-'}</span>
+                            </div>
+                        </td>
+                        <td><strong>${r.mobil?.nama || '-'}</strong></td>
+                        <td style="font-size: 13px;">${formatDateRange(r.tanggalsewa, r.tanggalkembali)}</td>
+                        <td>
+                            <span class="badge-status ${r.status === 'Sedang Berlangsung' ? 'badge-ongoing' : 'badge-completed'}">
+                                ${r.status}
+                            </span>
+                        </td>
+                    </tr>
+                `).join('');
+            }
         }
+
+        console.log('✅ Dashboard loaded - Total:', totalMobil, 'Tersedia:', tersedia, 'Disewa:', disewa, 'Rentals:', rentals.length);
+    } catch (err) {
+        console.error('❌ Load dashboard error:', err);
     }
+}
+
 
     // ============================================
     // CRUD: PELANGGAN
