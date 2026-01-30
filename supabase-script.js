@@ -885,6 +885,7 @@
             const tanggalSewa = document.getElementById('rentalStartDate')?.value;
             const tanggalKembali = document.getElementById('rentalEndDate')?.value;
             
+            // Validation
             if (!pelangganId || !mobilId || !tanggalSewa || !tanggalKembali) {
                 alert('❌ Lengkapi semua data penyewaan!');
                 return;
@@ -898,9 +899,10 @@
                 return;
             }
             
-            // ✅ Hitung durasi hari
+            // Calculate duration
             const durasiHari = Math.max(1, Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)));
             
+            // Get car price
             const carSelect = document.getElementById('rentalCar');
             const selectedOption = carSelect.selectedOptions[0];
             
@@ -910,7 +912,23 @@
             }
             
             const hargaPerHari = parseInt(selectedOption.dataset.harga, 10);
+            
+            if (!hargaPerHari || hargaPerHari <= 0) {
+                alert('❌ Harga mobil tidak valid!');
+                return;
+            }
+            
             const totalHarga = durasiHari * hargaPerHari;
+            
+            console.log('📝 Rental data:', {
+                pelangganId,
+                mobilId,
+                tanggalSewa,
+                tanggalKembali,
+                durasiHari,
+                hargaPerHari,
+                totalHarga
+            });
             
             // Generate invoice
             const now = new Date();
@@ -927,10 +945,10 @@
             const lastNum = lastInv ? parseInt(lastInv.invoice.split('-').pop()) : 0;
             const invoice = `INV-${dateStr}-${String(lastNum + 1).padStart(4, '0')}`;
             
-            console.log('📝 Creating rental:', { invoice, durasiHari, totalHarga });
+            console.log('🎫 Generated invoice:', invoice);
             
-            // ✅ INSERT dengan field durasihari
-            const { error: insertError } = await supabase
+            // ✅ INSERT penyewaan dengan SEMUA field yang diperlukan
+            const { data: newRental, error: insertError } = await supabase
                 .from('penyewaan')
                 .insert({
                     invoice: invoice,
@@ -938,46 +956,62 @@
                     mobilid: mobilId,
                     tanggalsewa: tanggalSewa,
                     tanggalkembali: tanggalKembali,
-                    durasihari: durasiHari,  // ✅ FIELD YANG DIPERLUKAN
+                    durasihari: durasiHari,        // ✅ FIELD 1
+                    hargaperhari: hargaPerHari,    // ✅ FIELD 2 (PENTING!)
                     totalharga: totalHarga,
                     status: 'Sedang Berlangsung'
-                });
+                })
+                .select()
+                .single();
             
-            if (insertError) throw insertError;
+            if (insertError) {
+                console.error('❌ Insert rental error:', insertError);
+                throw new Error(insertError.message || 'Gagal insert data penyewaan');
+            }
             
-            // Update status mobil
-            const { error: updateError } = await supabase
+            console.log('✅ Rental inserted:', newRental);
+            
+            // Update car status
+            const { error: updateCarError } = await supabase
                 .from('mobil')
                 .update({ status: 'disewa' })
                 .eq('id', mobilId);
             
-            if (updateError) throw updateError;
+            if (updateCarError) {
+                console.error('❌ Update car status error:', updateCarError);
+                throw new Error(updateCarError.message || 'Gagal update status mobil');
+            }
+            
+            console.log('✅ Car status updated to "disewa"');
             
             // Close modal
             const bsModal = bootstrap.Modal.getInstance(modal);
             if (bsModal) bsModal.hide();
             
+            // Reset form
             document.getElementById('rentalForm').reset();
             
-            // Reload data
+            // Reload all data
             await Promise.all([
                 loadRentals(),
                 loadCars(),
                 loadDashboard()
             ]);
             
+            // Success message
             alert(
-                `✅ Transaksi Penyewaan Berhasil!\n\n` +
+                `✅ Transaksi Penyewaan Berhasil Dibuat!\n\n` +
                 `📋 Invoice: ${invoice}\n` +
                 `📅 Durasi: ${durasiHari} hari\n` +
-                `💰 Total: ${formatCurrency(totalHarga)}`
+                `💰 Harga: ${formatCurrency(hargaPerHari)}/hari\n` +
+                `💵 Total Biaya: ${formatCurrency(totalHarga)}`
             );
             
-            console.log('✅ Rental created successfully');
+            console.log('✅ Rental process completed successfully');
             
         } catch (err) {
             console.error('❌ Save rental error:', err);
-            alert('❌ Gagal menyimpan penyewaan: ' + (err.message || 'Unknown error'));
+            alert('❌ Gagal menyimpan penyewaan:\n\n' + (err.message || 'Terjadi kesalahan tidak diketahui'));
         }
     }
 
