@@ -3,403 +3,459 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Rental Mobil - Car Rental Management</title>
+    <title>CarRent Pro - Dashboard Admin Rental Mobil</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<!-- Login Page -->
-    <div id="loginPage" class="login-container">
-        <div class="login-card">
-            <div class="login-header">
-                <div class="login-logo">
-                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z'/%3E%3C/svg%3E" alt="Car Logo">
+
+<!-- ========================================== -->
+<!-- LOGIN PAGE -->
+<!-- ========================================== -->
+<div id="loginPage" class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <div class="login-logo">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z'/%3E%3C/svg%3E" alt="Logo">
+            </div>
+            <h4>CarRent Pro</h4>
+            <p>Sistem Manajemen Rental Mobil</p>
+        </div>
+        <div class="login-body">
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email Administrator</label>
+                    <input type="email" id="email" class="form-control" placeholder="contoh: admin@carrent.com" required autocomplete="email">
                 </div>
-                <h4 style="margin: 0; font-weight: 700;">Sistem Rental Mobil</h4>
-                <p style="margin: 8px 0 0; opacity: 0.9;">Masuk sebagai Administrator</p>
+                <div class="form-group">
+                    <label for="password">Kata Sandi</label>
+                    <input type="password" id="password" class="form-control" placeholder="Masukkan kata sandi Anda" required autocomplete="current-password">
+                </div>
+                <div id="loginError" style="color: #F44336; font-size: 13px; margin-bottom: 18px; display: none; text-align: center; padding: 12px; background: rgba(244,67,54,0.08); border-radius: 10px; font-weight: 500;">
+                    ❌ Email atau kata sandi salah!
+                </div>
+                <button type="submit" class="btn-login">
+                    Masuk ke Dashboard
+                </button>
+            </form>
+        </div>
+        <div class="login-footer">
+            <small>🔒 Akses terbatas untuk administrator berwenang</small>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- MAIN APPLICATION -->
+<!-- ========================================== -->
+<div id="mainApp" style="display: none;">
+    
+    <!-- ========================================== -->
+    <!-- SIDEBAR -->
+    <!-- ========================================== -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z'/%3E%3C/svg%3E" alt="Logo">
             </div>
-            <div class="login-body">
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" class="form-control" placeholder="admin@rental.com" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Kata Sandi</label>
-                        <input type="password" id="password" class="form-control" placeholder="Masukkan kata sandi" required>
-                    </div>
-                    <div id="loginError" style="color: #E74C3C; font-size: 13px; margin-bottom: 15px; display: none; text-align: center; padding: 10px; background: rgba(231,76,60,0.1); border-radius: 8px;">
-                        Email atau kata sandi salah!
-                    </div>
-                    <button type="submit" class="btn btn-login">
-                        MASUK
-                    </button>
-                </form>
+            <div class="sidebar-title">
+                <h5>CarRent Pro</h5>
+                <small>Admin Dashboard</small>
             </div>
-            <div class="login-footer">
-                <small style="color: #6c757d;">Hanya untuk administrator yang berwenang</small>
+        </div>
+        
+        <nav style="padding: 18px 0;">
+            <div class="nav-item active" onclick="showPage('dashboard', this)">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z'/%3E%3C/svg%3E" alt="Dashboard">
+                <span>Dashboard</span>
             </div>
+            <div class="nav-item" onclick="showPage('cars', this)">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z'/%3E%3C/svg%3E" alt="Mobil">
+                <span>Kelola Mobil</span>
+            </div>
+            <div class="nav-item" onclick="showPage('customers', this)">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z'/%3E%3C/svg%3E" alt="Pelanggan">
+                <span>Data Pelanggan</span>
+            </div>
+            <div class="nav-item" onclick="showPage('rentals', this)">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z'/%3E%3C/svg%3E" alt="Penyewaan">
+                <span>Transaksi Sewa</span>
+            </div>
+            <div class="nav-item" onclick="showPage('returns', this)">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z'/%3E%3C/svg%3E" alt="Pengembalian">
+                <span>Pengembalian</span>
+            </div>
+            <div class="nav-item" onclick="showPage('transactions', this)">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z'/%3E%3C/svg%3E" alt="Keuangan">
+                <span>Laporan Keuangan</span>
+            </div>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar">A</div>
+                <div class="user-details">
+                    <h6>Administrator</h6>
+                    <small>Super Admin</small>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()" title="Keluar">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z'/%3E%3C/svg%3E" alt="Logout">
+            </button>
         </div>
     </div>
 
-    <!-- Main Application (Hidden by default) -->
-    <div id="mainApp" style="display: none;">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <div class="sidebar-logo">
-                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z'/%3E%3C/svg%3E" alt="Car Logo">
-                </div>
-                <div class="sidebar-title">
-                    <h5>Car Rental</h5>
-                    <small>Management System</small>
-                </div>
+    <!-- ========================================== -->
+    <!-- MAIN CONTENT -->
+    <!-- ========================================== -->
+    <div class="main-content">
+        
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-title">
+                <h4 id="pageTitle">Dashboard</h4>
             </div>
-            <nav style="padding: 15px 0;">
-                <div class="nav-item active" onclick="showPage('dashboard', this)">
-                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z'/%3E%3C/svg%3E" alt="Dashboard">
-                    <span>Dashboard</span>
-                </div>
-                <div class="nav-item" onclick="showPage('cars', this)">
-                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z'/%3E%3C/svg%3E" alt="Mobil">
-                    <span>Mobil</span>
-                </div>
-                <div class="nav-item" onclick="showPage('customers', this)">
-                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z'/%3E%3C/svg%3E" alt="Pelanggan">
-                    <span>Pelanggan</span>
-                </div>
-                <div class="nav-item" onclick="showPage('rentals', this)">
-                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z'/%3E%3C/svg%3E" alt="Penyewaan">
-                    <span>Penyewaan</span>
-                </div>
-                <div class="nav-item" onclick="showPage('returns', this)">
-                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z'/%3E%3C/svg%3E" alt="Pengembalian">
-                    <span>Pengembalian</span>
-                </div>
-                <div class="nav-item" onclick="showPage('transactions', this)">
-                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z'/%3E%3C/svg%3E" alt="Keuangan">
-                    <span>Keuangan</span>
-                </div>
-            </nav>
-            <div class="sidebar-footer">
-                <div class="user-info">
-                    <div class="user-avatar">A</div>
-                    <div class="user-details">
-                        <h6>Administrator</h6>
-                        <small>Admin</small>
-                    </div>
-                </div>
-                <button class="logout-btn" onclick="logout()">
-                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z'/%3E%3C/svg%3E" alt="Logout">
+            <div class="header-actions">
+                <button class="btn-icon" title="Notifikasi">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c757d' width='20' height='20'%3E%3Cpath d='M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z'/%3E%3C/svg%3E" alt="Notifikasi">
+                    <span class="notification-badge"></span>
+                </button>
+                <button class="btn btn-primary" onclick="showPage('rentals')">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white' width='18' height='18'%3E%3Cpath d='M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z'/%3E%3C/svg%3E" alt="Plus">
+                    Transaksi Baru
                 </button>
             </div>
         </div>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Header -->
-            <div class="header">
-                <div class="header-title">
-                    <h4 id="pageTitle">Dashboard</h4>
-                </div>
-                <div class="header-actions">
-                    <button class="btn-icon">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c757d' width='20' height='20'%3E%3Cpath d='M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z'/%3E%3C/svg%3E" alt="Notifikasi">
-                        <span class="notification-badge"></span>
-                    </button>
-                    <button class="btn btn-primary" onclick="showPage('rentals')">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white' width='16' height='16'%3E%3Cpath d='M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z'/%3E%3C/svg%3E" style="margin-right: 6px;">
-                        Sewa Mobil
-                    </button>
-                </div>
-            </div>
-
-            <!-- Dashboard Page -->
-            <div id="page-dashboard" class="fade-in">
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <div class="stat-icon primary">
-                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233498DB'%3E%3Cpath d='M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z'/%3E%3C/svg%3E" alt="Total Mobil">
-                            </div>
-                            <div class="stat-info">
-                                <h3>0</h3>
-                                <p>Total Mobil</p>
-                            </div>
+        <!-- ========================================== -->
+        <!-- DASHBOARD PAGE -->
+        <!-- ========================================== -->
+        <div id="page-dashboard" class="fade-in">
+            
+            <!-- Stats Cards -->
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon primary">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232196F3'%3E%3Cpath d='M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z'/%3E%3C/svg%3E" alt="Total Mobil">
                         </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <div class="stat-icon success">
-                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2327AE60'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E" alt="Tersedia">
-                            </div>
-                            <div class="stat-info">
-                                <h3>0</h3>
-                                <p>Tersedia</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <div class="stat-icon warning">
-                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23F39C12'%3E%3Cpath d='M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11zM9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm-8 4H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z'/%3E%3C/svg%3E" alt="Sedang Disewa">
-                            </div>
-                            <div class="stat-info">
-                                <h3>0</h3>
-                                <p>Sedang Disewa</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="stat-card">
-                            <div class="stat-icon success">
-                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2327AE60'%3E%3Cpath d='M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z'/%3E%3C/svg%3E" alt="Pendapatan">
-                            </div>
-                            <div class="stat-info">
-                                <h3>0</h3>
-                                <p>Pendapatan</p>
-                            </div>
+                        <div class="stat-info">
+                            <h3>0</h3>
+                            <p>Total Armada Mobil</p>
                         </div>
                     </div>
                 </div>
-
-                <div class="row">
-                    <div class="col-md-8">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5>Penyewaan Terbaru</h5>
-                                <button class="btn btn-outline btn-sm" onclick="showPage('rentals')">Lihat Semua</button>
-                            </div>
-                            <div class="card-body" style="padding: 0;">
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th>Invoice</th>
-                                            <th>Pelanggan</th>
-                                            <th>Mobil</th>
-                                            <th>Tanggal</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                       
-                                    </tbody>
-                                </table>
-                            </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon success">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234CAF50'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E" alt="Tersedia">
+                        </div>
+                        <div class="stat-info">
+                            <h3>0</h3>
+                            <p>Mobil Tersedia</p>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5>Aksi Cepat</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="quick-actions">
-                                    <button class="quick-action-btn primary" onclick="showPage('rentals')">
-                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z'/%3E%3C/svg%3E" alt="Tambah">
-                                        Penyewaan Baru
-                                    </button>
-                                    <button class="quick-action-btn success" onclick="showPage('returns')">
-                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z'/%3E%3C/svg%3E" alt="Kembali">
-                                        Pengembalian
-                                    </button>
-                                    <button class="quick-action-btn outline" onclick="showPage('cars')">
-                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c757d'%3E%3Cpath d='M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z'/%3E%3C/svg%3E" alt="Mobil">
-                                        Tambah Mobil
-                                    </button>
-                                </div>
-                            </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon warning">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23FF9800'%3E%3Cpath d='M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11zM9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm-8 4H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z'/%3E%3C/svg%3E" alt="Disewa">
+                        </div>
+                        <div class="stat-info">
+                            <h3>0</h3>
+                            <p>Sedang Disewa</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon success">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234CAF50'%3E%3Cpath d='M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z'/%3E%3C/svg%3E" alt="Pendapatan">
+                        </div>
+                        <div class="stat-info">
+                            <h3>0</h3>
+                            <p>Total Pendapatan</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Cars Page -->
-            <div id="page-cars" style="display: none;" class="fade-in">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 style="margin: 0; font-weight: 700; color: var(--primary);">Data Mobil</h5>
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#carModal">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white' width='16' height='16'%3E%3Cpath d='M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z'/%3E%3C/svg%3E" style="margin-right: 6px;">
-                        Tambah Mobil
-                    </button>
-                </div>
-
-        <div class="row">
-        <!-- Data mobil akan di-load oleh JavaScript dari database -->
-    </div>
-</div>
-            <!-- Customers Page -->
-            <div id="page-customers" style="display: none;" class="fade-in">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 style="margin: 0; font-weight: 700; color: var(--primary);">Data Pelanggan</h5>
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#customerModal">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white' width='16' height='16'%3E%3Cpath d='M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z'/%3E%3C/svg%3E" style="margin-right: 6px;">
-                        Tambah Pelanggan
-                    </button>
-                </div>
-                <div class="card">
-                    <div class="card-body" style="padding: 0;">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Kode</th>
-                                    <th>Nama</th>
-                                    <th>NIK</th>
-                                    <th>Telepon</th>
-                                    <th>Status</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Rentals Page -->
-            <div id="page-rentals" style="display: none;" class="fade-in">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 style="margin: 0; font-weight: 700; color: var(--primary);">Data Penyewaan</h5>
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#rentalModal">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white' width='16' height='16'%3E%3Cpath d='M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z'/%3E%3C/svg%3E" style="margin-right: 6px;">
-                        Penyewaan Baru
-                    </button>
-                </div>
-                <div class="card">
-                    <div class="card-body" style="padding: 0;">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Invoice</th>
-                                    <th>Pelanggan</th>
-                                    <th>Mobil</th>
-                                    <th>Tanggal</th>
-                                    <th>Total</th>
-                                    <th>Status</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                               
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Returns Page -->
-            <div id="page-returns" style="display: none;" class="fade-in">
-                <h5 style="margin: 0 0 20px 0; font-weight: 700; color: var(--primary);">Pengembalian Mobil</h5>
-                <div class="card">
-                    <div class="card-body" style="padding: 0;">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Invoice</th>
-                                    <th>Pelanggan</th>
-                                    <th>Mobil</th>
-                                    <th>Tanggal Kembali</th>
-                                    <th>Denda</th>
-                                    <th>Pengembalian</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><strong>INV-20240114-0001</strong></td>
-                                    <td>Budi Santoso</td>
-                                    <td>Mitsubishi Pajero</td>
-                                    <td>15 Jan 2024</td>
-                                    <td>Rp 0</td>
-                                    <td><strong style="color: var(--success);">Rp 800.000</strong></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Transactions Page -->
-            <div id="page-transactions" style="display: none;" class="fade-in">
-                <h5 style="margin: 0 0 20px 0; font-weight: 700; color: var(--primary);">Transaksi Keuangan</h5>
-                <div class="row mb-4">
-                    <div class="col-md-4">
-                        <div class="stat-card">
-                            <div class="stat-icon success">
-                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2327AE60'%3E%3Cpath d='M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z'/%3E%3C/svg%3E" alt="Pendapatan">
-                            </div>
-                            <div class="stat-info">
-                                <h3>Rp 4,5M</h3>
-                                <p>Total Pendapatan</p>
-                            </div>
+            <!-- Content Row -->
+            <div class="row">
+                
+                <!-- Recent Rentals -->
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>📋 Transaksi Penyewaan Terbaru</h5>
+                            <button class="btn btn-outline btn-sm" onclick="showPage('rentals')">Lihat Semua</button>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="stat-card">
-                            <div class="stat-icon primary">
-                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233498DB'%3E%3Cpath d='M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11zM9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm-8 4H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z'/%3E%3C/svg%3E" alt="Bulan Ini">
-                            </div>
-                            <div class="stat-info">
-                                <h3>Rp 1,2M</h3>
-                                <p>Bulan Ini</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="stat-card">
-                            <div class="stat-icon purple">
-                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239B59B6'%3E%3Cpath d='M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z'/%3E%3C/svg%3E" alt="Total Transaksi">
-                            </div>
-                            <div class="stat-info">
-                                <h3>12</h3>
-                                <p>Total Transaksi</p>
-                            </div>
+                        <div class="card-body" style="padding: 0;">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>No. Invoice</th>
+                                        <th>Pelanggan</th>
+                                        <th>Mobil</th>
+                                        <th>Periode Sewa</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="5" style="text-align: center; padding: 40px; color: #6c757d;">
+                                            <div style="font-size: 48px; margin-bottom: 10px;">📊</div>
+                                            <strong>Belum Ada Transaksi</strong><br>
+                                            <small>Transaksi penyewaan akan muncul di sini</small>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
-                <div class="card">
-                    <div class="card-body" style="padding: 0;">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>No. Transaksi</th>
-                                    <th>Tanggal</th>
-                                    <th>Jenis</th>
-                                    <th>Jumlah</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><strong>TRX-20240115-0001</strong></td>
-                                    <td>15 Jan 2024 10:30</td>
-                                    <td><span class="badge-status badge-active">Pembayaran</span></td>
-                                    <td><strong style="color: var(--success);">+ Rp 500.000</strong></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>TRX-20240115-0002</strong></td>
-                                    <td>15 Jan 2024 09:15</td>
-                                    <td><span class="badge-status badge-active">Deposit</span></td>
-                                    <td><strong style="color: var(--success);">+ Rp 200.000</strong></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>TRX-20240114-0001</strong></td>
-                                    <td>14 Jan 2024 14:00</td>
-                                    <td><span class="badge-status badge-ongoing">Pengembalian</span></td>
-                                    <td><strong style="color: var(--danger);">- Rp 100.000</strong></td>
-                                </tr>
-                            </tbody>
-                        </table>
+
+                <!-- Quick Actions -->
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>⚡ Menu Cepat</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="quick-actions">
+                                <button class="quick-action-btn primary" onclick="showPage('rentals')">
+                                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z'/%3E%3C/svg%3E" alt="Plus">
+                                    Buat Transaksi Sewa
+                                </button>
+                                <button class="quick-action-btn success" onclick="showPage('returns')">
+                                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z'/%3E%3C/svg%3E" alt="Return">
+                                    Proses Pengembalian
+                                </button>
+                                <button class="quick-action-btn outline" onclick="showPage('cars')">
+                                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c757d'%3E%3Cpath d='M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z'/%3E%3C/svg%3E" alt="Car">
+                                    Tambah Mobil Baru
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-<!-- Car Modal -->
+        <!-- ========================================== -->
+        <!-- CARS PAGE -->
+        <!-- ========================================== -->
+        <div id="page-cars" style="display: none;" class="fade-in">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 style="margin: 0; font-weight: 700; color: var(--primary);">🚗 Manajemen Armada Mobil</h5>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#carModal" onclick="document.getElementById('carModal').dataset.editId = ''; document.getElementById('carForm').reset(); document.getElementById('imagePreviewContainer').style.display = 'none'; document.querySelector('#carModal .modal-title').textContent = 'Tambah Mobil Baru';">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white' width='18' height='18'%3E%3Cpath d='M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z'/%3E%3C/svg%3E" alt="Plus">
+                    Tambah Mobil
+                </button>
+            </div>
+
+            <div class="row">
+                <!-- Data mobil akan di-load dari JavaScript -->
+                <div class="col-12" id="emptyCarState" style="text-align: center; padding: 60px 20px; display: none;">
+                    <div style="font-size: 80px; margin-bottom: 15px;">🚗</div>
+                    <h5 style="color: var(--text-primary); margin-bottom: 8px;">Belum Ada Mobil</h5>
+                    <p style="color: var(--text-secondary); margin-bottom: 20px;">Tambahkan mobil pertama Anda untuk memulai bisnis rental</p>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#carModal">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white' width='18' height='18'%3E%3Cpath d='M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z'/%3E%3C/svg%3E" alt="Plus">
+                        Tambah Mobil Sekarang
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- CUSTOMERS PAGE -->
+        <!-- ========================================== -->
+        <div id="page-customers" style="display: none;" class="fade-in">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 style="margin: 0; font-weight: 700; color: var(--primary);">👥 Database Pelanggan</h5>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#customerModal" onclick="document.getElementById('customerModal').dataset.editId = ''; document.getElementById('customerForm').reset(); document.querySelector('#customerModal .modal-title').textContent = 'Tambah Pelanggan Baru';">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white' width='18' height='18'%3E%3Cpath d='M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z'/%3E%3C/svg%3E" alt="Plus">
+                    Tambah Pelanggan
+                </button>
+            </div>
+            <div class="card">
+                <div class="card-body" style="padding: 0;">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Kode</th>
+                                <th>Nama Pelanggan</th>
+                                <th>NIK (KTP)</th>
+                                <th>No. Telepon</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 40px; color: #6c757d;">
+                                    <div style="font-size: 48px; margin-bottom: 10px;">👥</div>
+                                    <strong>Belum Ada Data Pelanggan</strong><br>
+                                    <small>Tambahkan pelanggan untuk memulai transaksi sewa</small>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- RENTALS PAGE -->
+        <!-- ========================================== -->
+        <div id="page-rentals" style="display: none;" class="fade-in">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 style="margin: 0; font-weight: 700; color: var(--primary);">📝 Transaksi Penyewaan Mobil</h5>
+                <button class="btn btn-primary" onclick="window.startCreateRental()">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white' width='18' height='18'%3E%3Cpath d='M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z'/%3E%3C/svg%3E" alt="Plus">
+                    Transaksi Baru
+                </button>
+            </div>
+            <div class="card">
+                <div class="card-body" style="padding: 0;">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>No. Invoice</th>
+                                <th>Nama Pelanggan</th>
+                                <th>Mobil</th>
+                                <th>Periode Sewa</th>
+                                <th>Total Biaya</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 40px; color: #6c757d;">
+                                    <div style="font-size: 48px; margin-bottom: 10px;">📋</div>
+                                    <strong>Belum Ada Transaksi</strong><br>
+                                    <small>Buat transaksi penyewaan pertama Anda</small>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- RETURNS PAGE -->
+        <!-- ========================================== -->
+        <div id="page-returns" style="display: none;" class="fade-in">
+            <h5 style="margin: 0 0 25px 0; font-weight: 700; color: var(--primary);">🔄 Proses Pengembalian Mobil</h5>
+            <div class="card">
+                <div class="card-body" style="padding: 0;">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>No. Invoice</th>
+                                <th>Nama Pelanggan</th>
+                                <th>Mobil</th>
+                                <th>Tanggal Kembali</th>
+                                <th>Denda (Jika Ada)</th>
+                                <th>Total Bayar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 40px; color: #6c757d;">
+                                    <div style="font-size: 48px; margin-bottom: 10px;">✅</div>
+                                    <strong>Tidak Ada Mobil yang Perlu Dikembalikan</strong><br>
+                                    <small>Semua mobil sudah dikembalikan atau masih dalam masa sewa</small>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TRANSACTIONS PAGE -->
+        <!-- ========================================== -->
+        <div id="page-transactions" style="display: none;" class="fade-in">
+            <h5 style="margin: 0 0 25px 0; font-weight: 700; color: var(--primary);">💰 Laporan Keuangan & Transaksi</h5>
+            
+            <!-- Financial Stats -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-icon success">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234CAF50'%3E%3Cpath d='M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z'/%3E%3C/svg%3E" alt="Pendapatan">
+                        </div>
+                        <div class="stat-info">
+                            <h3>Rp 0</h3>
+                            <p>Total Pendapatan</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-icon primary">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232196F3'%3E%3Cpath d='M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11zM9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm-8 4H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z'/%3E%3C/svg%3E" alt="Bulan Ini">
+                        </div>
+                        <div class="stat-info">
+                            <h3>Rp 0</h3>
+                            <p>Pendapatan Bulan Ini</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="stat-icon purple">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239C27B0'%3E%3Cpath d='M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z'/%3E%3C/svg%3E" alt="Transaksi">
+                        </div>
+                        <div class="stat-info">
+                            <h3>0</h3>
+                            <p>Total Transaksi Selesai</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body" style="padding: 0;">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>No. Transaksi</th>
+                                <th>Tanggal & Waktu</th>
+                                <th>Jenis Transaksi</th>
+                                <th>Nominal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="4" style="text-align: center; padding: 40px; color: #6c757d;">
+                                    <div style="font-size: 48px; margin-bottom: 10px;">💳</div>
+                                    <strong>Belum Ada Riwayat Transaksi</strong><br>
+                                    <small>Transaksi keuangan akan tercatat secara otomatis</small>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- MODALS -->
+<!-- ========================================== -->
+
+<!-- CAR MODAL -->
 <div class="modal fade" id="carModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Tambah Mobil Baru</h5>
@@ -408,163 +464,177 @@
             <div class="modal-body">
                 <form id="carForm">
                     <div class="mb-3">
-                        <label class="form-label">Merek</label>
+                        <label class="form-label">Merek Mobil</label>
                         <select id="carMerek" class="form-control form-select">
-                            <option value="">Pilih Merek</option>
+                            <option value="">-- Pilih Merek --</option>
                             <option value="Toyota">Toyota</option>
                             <option value="Honda">Honda</option>
                             <option value="Mitsubishi">Mitsubishi</option>
                             <option value="Daihatsu">Daihatsu</option>
                             <option value="Suzuki">Suzuki</option>
+                            <option value="Nissan">Nissan</option>
+                            <option value="Mazda">Mazda</option>
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Model</label>
-                        <input type="text" id="carModel" class="form-control" placeholder="Contoh: Camry, Civic">
+                        <label class="form-label">Model/Tipe Mobil *</label>
+                        <input type="text" id="carModel" class="form-control" placeholder="Contoh: Avanza, Civic, Xpander" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Nomor Polisi</label>
-                        <input type="text" id="carPlat" class="form-control" placeholder="B 1234 ABC">
+                        <label class="form-label">Nomor Polisi (Plat) *</label>
+                        <input type="text" id="carPlat" class="form-control" placeholder="Contoh: B 1234 XYZ" required style="text-transform: uppercase;">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Jumlah Kursi</label>
+                            <select id="carKursi" class="form-control form-select">
+                                <option value="4">4 Penumpang</option>
+                                <option value="5" selected>5 Penumpang</option>
+                                <option value="6">6 Penumpang</option>
+                                <option value="7">7 Penumpang</option>
+                                <option value="8">8 Penumpang</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Transmisi</label>
+                            <select id="carTransmisi" class="form-control form-select">
+                                <option value="Automatic" selected>Automatic (Matic)</option>
+                                <option value="Manual">Manual</option>
+                                <option value="CVT">CVT</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Jumlah Kursi</label>
-                        <input type="number" id="carKursi" class="form-control" placeholder="5" value="5">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Transmisi</label>
-                        <select id="carTransmisi" class="form-control form-select">
-                            <option value="Automatic">Automatic</option>
-                            <option value="Manual">Manual</option>
-                            <option value="CVT">CVT</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Bahan Bakar</label>
+                        <label class="form-label">Jenis Bahan Bakar</label>
                         <select id="carBahanBakar" class="form-control form-select">
-                            <option value="Bensin">Bensin</option>
-                            <option value="Diesel">Diesel</option>
-                            <option value="Listrik">Listrik</option>
+                            <option value="Bensin" selected>Bensin</option>
+                            <option value="Diesel">Diesel/Solar</option>
+                            <option value="Listrik">Listrik (EV)</option>
+                            <option value="Hybrid">Hybrid</option>
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Harga per Hari (Rp)</label>
-                        <input type="number" id="carHarga" class="form-control" placeholder="500000">
+                        <label class="form-label">Tarif Sewa per Hari *</label>
+                        <div class="input-group">
+                            <span class="input-group-text">Rp</span>
+                            <input type="number" id="carHarga" class="form-control" placeholder="250000" required min="50000" step="10000">
+                        </div>
+                        <small class="text-muted">Minimal Rp 50.000/hari</small>
                     </div>
-                    
-                    <!-- Image Upload -->
                     <div class="mb-3">
-                        <label class="form-label">Foto Mobil (Optional)</label>
-                        <input type="file" id="carImageInput" class="form-control" accept="image/*">
-                        <small class="text-muted">Format: JPG, PNG, max 2MB</small>
+                        <label class="form-label">Foto Mobil (Opsional)</label>
+                        <input type="file" id="carImageInput" class="form-control" accept="image/jpeg,image/jpg,image/png">
+                        <small class="text-muted">Format: JPG, PNG • Maksimal 2MB</small>
                     </div>
-                    
-                    <!-- Image Preview -->
-                    <div id="imagePreviewContainer" style="display: none; margin-top: 10px;">
-                        <label class="form-label">Preview:</label>
-                        <img id="imagePreview" src="" alt="Preview" style="width: 100%; max-height: 200px; object-fit: contain; border: 1px solid #ddd; border-radius: 8px;">
+                    <div id="imagePreviewContainer" style="display: none; margin-top: 12px;">
+                        <label class="form-label">Preview Foto:</label>
+                        <img id="imagePreview" src="" alt="Preview" style="width: 100%; max-height: 220px; object-fit: contain; border: 2px solid #e0e6ed; border-radius: 12px; padding: 10px; background: #fafbfc;">
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Batal</button>
-                <button type="button" class="btn btn-primary" id="saveCarBtn">Simpan</button>
+                <button type="button" class="btn btn-primary" id="saveCarBtn">
+                    💾 Simpan Mobil
+                </button>
             </div>
         </div>
     </div>
 </div>
 
-
-
-    <!-- Customer Modal -->
+<!-- CUSTOMER MODAL -->
 <div class="modal fade" id="customerModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Tambah Pelanggan</h5>
+                <h5 class="modal-title">Tambah Pelanggan Baru</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <form id="customerForm">
                     <div class="mb-3">
-                        <label class="form-label">NIK (KTP)</label>
-                        <input type="text" id="customerNIK" class="form-control" placeholder="3175010101010001">
+                        <label class="form-label">NIK (Nomor KTP) *</label>
+                        <input type="text" id="customerNIK" class="form-control" placeholder="3175010101010001" required maxlength="16" pattern="[0-9]{16}">
+                        <small class="text-muted">16 digit nomor identitas KTP</small>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Nama Lengkap</label>
-                        <input type="text" id="customerNama" class="form-control" placeholder="Ahmad Fauzi">
+                        <label class="form-label">Nama Lengkap *</label>
+                        <input type="text" id="customerNama" class="form-control" placeholder="Nama sesuai KTP" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Telepon</label>
-                        <input type="text" id="customerTelepon" class="form-control" placeholder="081234567890">
+                        <label class="form-label">Nomor Telepon/WhatsApp *</label>
+                        <input type="tel" id="customerTelepon" class="form-control" placeholder="08123456789" required pattern="[0-9]{10,13}">
+                        <small class="text-muted">Format: 08xxxxxxxxxx (tanpa +62)</small>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Batal</button>
-                <button type="button" class="btn btn-primary" id="saveCustomerBtn">Simpan</button>
+                <button type="button" class="btn btn-primary" id="saveCustomerBtn">
+                    💾 Simpan Pelanggan
+                </button>
             </div>
         </div>
     </div>
 </div>
 
-   <!-- Rental Modal -->
+<!-- RENTAL MODAL -->
 <div class="modal fade" id="rentalModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Penyewaan Baru</h5>
+                <h5 class="modal-title">Buat Transaksi Penyewaan</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <form id="rentalForm">
                     <div class="mb-3">
-                        <label class="form-label">Pelanggan</label>
-                        <select id="rentalCustomer" class="form-control form-select">
-                            <option value="">Pilih Pelanggan</option>
+                        <label class="form-label">Pilih Pelanggan *</label>
+                        <select id="rentalCustomer" class="form-control form-select" required>
+                            <option value="">-- Pilih Pelanggan --</option>
                         </select>
+                        <small class="text-muted">Jika pelanggan belum terdaftar, tambahkan terlebih dahulu</small>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Mobil</label>
-                        <select id="rentalCar" class="form-control form-select">
-                            <option value="">Pilih Mobil</option>
+                        <label class="form-label">Pilih Mobil *</label>
+                        <select id="rentalCar" class="form-control form-select" required>
+                            <option value="">-- Pilih Mobil --</option>
                         </select>
                     </div>
                     <div class="row">
-                        <div class="col-6">
-                            <div class="mb-3">
-                                <label class="form-label">Tanggal Sewa</label>
-                                <input type="date" id="rentalStartDate" class="form-control">
-                            </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tanggal Mulai Sewa *</label>
+                            <input type="date" id="rentalStartDate" class="form-control" required>
                         </div>
-                        <div class="col-6">
-                            <div class="mb-3">
-                                <label class="form-label">Tanggal Kembali</label>
-                                <input type="date" id="rentalEndDate" class="form-control">
-                            </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tanggal Selesai Sewa *</label>
+                            <input type="date" id="rentalEndDate" class="form-control" required>
                         </div>
+                    </div>
+                    <div style="background: #f0f9ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 12px; margin-top: 10px;">
+                        <small style="color: #1e40af;">
+                            💡 <strong>Catatan:</strong> Total biaya akan dihitung otomatis berdasarkan durasi sewa dan tarif mobil
+                        </small>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Batal</button>
-                <button type="button" class="btn btn-primary" id="saveRentalBtn">Buat Penyewaan</button>
+                <button type="button" class="btn btn-primary" id="saveRentalBtn">
+                    ✅ Buat Transaksi
+                </button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Bootstrap JS -->
+<!-- ========================================== -->
+<!-- SCRIPTS -->
+<!-- ========================================== -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- CryptoJS for password hashing -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-
-<!-- Supabase JS Client -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<!-- Custom Script -->
 <script src="supabase-script.js"></script>
+
 </body>
 </html>
-
-
