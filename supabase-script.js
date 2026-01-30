@@ -349,90 +349,86 @@
         ]);
     }
 
-   // ============================================
-// DASHBOARD
-// ============================================
-async function loadDashboard() {
-    try {
-        const [carsRes, rentalsRes] = await Promise.all([
-            supabase.from('mobil').select('id, status'),
-            supabase.from('penyewaan').select(`
-                id,
-                invoice,
-                tanggalsewa,
-                tanggalkembali,
-                totalharga,
-                status,
-                created_at,
-                pelanggan:pelangganid(nama),
-                mobil:mobilid(nama)
-            `).order('created_at', { ascending: false }).limit(5) // Ambil 5 transaksi terakhir
-        ]);
+    // ============================================
+    // DASHBOARD - FIXED WITH TABLE
+    // ============================================
+    async function loadDashboard() {
+        try {
+            const [carsRes, rentalsRes] = await Promise.all([
+                supabase.from('mobil').select('id, status'),
+                supabase.from('penyewaan').select(`
+                    id,
+                    invoice,
+                    tanggalsewa,
+                    tanggalkembali,
+                    totalharga,
+                    status,
+                    created_at,
+                    pelanggan:pelangganid(nama),
+                    mobil:mobilid(nama)
+                `).order('created_at', { ascending: false }).limit(5)
+            ]);
 
-        const cars = carsRes.data || [];
-        const rentals = rentalsRes.data || [];
+            const cars = carsRes.data || [];
+            const rentals = rentalsRes.data || [];
 
-        const totalMobil = cars.length;
-        
-        // Perhitungan yang benar
-        const disewa = cars.filter(c => c.status === 'disewa').length;
-        const tersedia = totalMobil - disewa;
-        
-        // Hitung total pendapatan dari transaksi yang sudah selesai atau sedang berlangsung
-        const pendapatan = rentals
-            .filter(r => r.status === 'Selesai' || r.status === 'Sedang Berlangsung')
-            .reduce((sum, r) => sum + (Number(r.totalharga) || 0), 0);
+            const totalMobil = cars.length;
+            
+            // ✅ FIX: Perhitungan yang benar
+            const disewa = cars.filter(c => c.status === 'disewa').length;
+            const tersedia = totalMobil - disewa;
+            
+            const pendapatan = rentals
+                .filter(r => r.status === 'Selesai' || r.status === 'Sedang Berlangsung')
+                .reduce((sum, r) => sum + (Number(r.totalharga) || 0), 0);
 
-        // Update stat cards
-        const stats = document.querySelectorAll('.stat-card .stat-info h3');
-        if (stats[0]) stats[0].textContent = totalMobil;
-        if (stats[1]) stats[1].textContent = tersedia;
-        if (stats[2]) stats[2].textContent = disewa;
-        if (stats[3]) stats[3].textContent = formatCurrency(pendapatan);
+            // Update stat cards
+            const stats = document.querySelectorAll('.stat-card .stat-info h3');
+            if (stats[0]) stats[0].textContent = totalMobil;
+            if (stats[1]) stats[1].textContent = tersedia;
+            if (stats[2]) stats[2].textContent = disewa;
+            if (stats[3]) stats[3].textContent = formatCurrency(pendapatan);
 
-        // ✅ FIX: Update tabel transaksi terbaru di dashboard
-        const dashboardTbody = document.querySelector('#page-dashboard table tbody');
-        if (dashboardTbody) {
-            if (!rentals || rentals.length === 0) {
-                // Tampilkan empty state
-                dashboardTbody.innerHTML = `
-                    <tr>
-                        <td colspan="5" style="text-align: center; padding: 40px; color: #6c757d;">
-                            <div style="font-size: 48px; margin-bottom: 10px;">📊</div>
-                            <strong>Belum Ada Transaksi</strong><br>
-                            <small>Transaksi penyewaan akan muncul di sini</small>
-                        </td>
-                    </tr>
-                `;
-            } else {
-                // Tampilkan data transaksi
-                dashboardTbody.innerHTML = rentals.map(r => `
-                    <tr>
-                        <td><strong style="color: var(--primary);">${r.invoice}</strong></td>
-                        <td>
-                            <div class="table-user">
-                                <div class="table-user-avatar">${avatarFromName(r.pelanggan?.nama || 'N/A')}</div>
-                                <span>${r.pelanggan?.nama || '-'}</span>
-                            </div>
-                        </td>
-                        <td><strong>${r.mobil?.nama || '-'}</strong></td>
-                        <td style="font-size: 13px;">${formatDateRange(r.tanggalsewa, r.tanggalkembali)}</td>
-                        <td>
-                            <span class="badge-status ${r.status === 'Sedang Berlangsung' ? 'badge-ongoing' : 'badge-completed'}">
-                                ${r.status}
-                            </span>
-                        </td>
-                    </tr>
-                `).join('');
+            // ✅ FIX: Update tabel transaksi terbaru di dashboard
+            const dashboardTbody = document.querySelector('#page-dashboard table tbody');
+            if (dashboardTbody) {
+                if (!rentals || rentals.length === 0) {
+                    dashboardTbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 40px; color: #6c757d;">
+                                <div style="font-size: 48px; margin-bottom: 10px;">📊</div>
+                                <strong>Belum Ada Transaksi</strong><br>
+                                <small>Transaksi penyewaan akan muncul di sini</small>
+                            </td>
+                        </tr>
+                    `;
+                } else {
+                    dashboardTbody.innerHTML = rentals.map(r => `
+                        <tr>
+                            <td><strong style="color: var(--primary);">${r.invoice}</strong></td>
+                            <td>
+                                <div class="table-user">
+                                    <div class="table-user-avatar">${avatarFromName(r.pelanggan?.nama || 'N/A')}</div>
+                                    <span>${r.pelanggan?.nama || '-'}</span>
+                                </div>
+                            </td>
+                            <td><strong>${r.mobil?.nama || '-'}</strong></td>
+                            <td style="font-size: 13px;">${formatDateRange(r.tanggalsewa, r.tanggalkembali)}</td>
+                            <td>
+                                <span class="badge-status ${r.status === 'Sedang Berlangsung' ? 'badge-ongoing' : 'badge-completed'}">
+                                    ${r.status}
+                                </span>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
             }
+
+            console.log('✅ Dashboard loaded - Total:', totalMobil, 'Tersedia:', tersedia, 'Disewa:', disewa, 'Rentals:', rentals.length);
+        } catch (err) {
+            console.error('❌ Load dashboard error:', err);
         }
-
-        console.log('✅ Dashboard loaded - Total:', totalMobil, 'Tersedia:', tersedia, 'Disewa:', disewa, 'Rentals:', rentals.length);
-    } catch (err) {
-        console.error('❌ Load dashboard error:', err);
     }
-}
-
 
     // ============================================
     // CRUD: PELANGGAN
@@ -449,28 +445,40 @@ async function loadDashboard() {
             const tbody = document.querySelector('#page-customers table tbody');
             if (!tbody) return;
             
-            tbody.innerHTML = (data || []).map(p => `
-                <tr>
-                    <td><strong>${p.kode_pelanggan}</strong></td>
-                    <td>
-                        <div class="table-user">
-                            <div class="table-user-avatar">${avatarFromName(p.nama)}</div>
-                            <span>${p.nama}</span>
-                        </div>
-                    </td>
-                    <td>${p.nik}</td>
-                    <td>${p.telepon}</td>
-                    <td>
-                        <span class="badge-status ${p.status === 'aktif' ? 'badge-active' : 'badge-inactive'}">
-                            ${p.status}
-                        </span>
-                    </td>
-                    <td>
-                        <button class="btn btn-outline btn-sm" onclick="window.startEditCustomer('${p.id}')">Edit</button>
-                        <button class="btn btn-primary btn-sm" onclick="window.showPage('rentals')">Sewa</button>
-                    </td>
-                </tr>
-            `).join('');
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 40px; color: #6c757d;">
+                            <div style="font-size: 48px; margin-bottom: 10px;">👥</div>
+                            <strong>Belum Ada Data Pelanggan</strong><br>
+                            <small>Tambahkan pelanggan untuk memulai transaksi sewa</small>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                tbody.innerHTML = data.map(p => `
+                    <tr>
+                        <td><strong>${p.kode_pelanggan}</strong></td>
+                        <td>
+                            <div class="table-user">
+                                <div class="table-user-avatar">${avatarFromName(p.nama)}</div>
+                                <span>${p.nama}</span>
+                            </div>
+                        </td>
+                        <td>${p.nik}</td>
+                        <td>${p.telepon}</td>
+                        <td>
+                            <span class="badge-status ${p.status === 'aktif' ? 'badge-active' : 'badge-inactive'}">
+                                ${p.status}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn btn-outline btn-sm" onclick="window.startEditCustomer('${p.id}')">Edit</button>
+                            <button class="btn btn-primary btn-sm" onclick="window.showPage('rentals')">Sewa</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
             
             console.log('✅ Customers loaded:', data.length);
         } catch (err) {
@@ -569,7 +577,7 @@ async function loadDashboard() {
     }
 
     // ============================================
-    // CRUD: MOBIL (WITH IMAGE UPLOAD)
+    // CRUD: MOBIL
     // ============================================
     async function loadCars() {
         try {
@@ -583,40 +591,54 @@ async function loadDashboard() {
             const container = document.querySelector('#page-cars .row');
             if (!container) return;
             
-            container.innerHTML = (data || []).map(m => `
-                <div class="col-md-4">
-                    <div class="car-card">
-                        <div class="car-image" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)">
-                            ${m.image_url 
-                                ? `<img src="${m.image_url}" alt="${m.nama}" style="width: 90%; height: auto; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4));">`
-                                : `<div style="padding: 60px; text-align: center; color: #fff; opacity: 0.5;">📷 No Image</div>`
-                            }
-                            <span class="car-status ${m.status === 'tersedia' ? 'badge-available' : 'badge-rented'}">
-                                ${m.status === 'tersedia' ? 'Tersedia' : 'Disewa'}
-                            </span>
-                        </div>
-                        <div class="car-info">
-                            <div class="car-title">${m.nama}</div>
-                            <div class="car-plate">${m.plat_nomor}</div>
-                            <div class="car-specs">
-                                <div class="spec-item">${m.kursi} Kursi</div>
-                                <div class="spec-item">${m.transmisi}</div>
-                                <div class="spec-item">${m.bahanbakar}</div>
+            if (!data || data.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12" style="text-align: center; padding: 60px 20px;">
+                        <div style="font-size: 80px; margin-bottom: 15px;">🚗</div>
+                        <h5 style="color: var(--text-primary); margin-bottom: 8px;">Belum Ada Mobil</h5>
+                        <p style="color: var(--text-secondary); margin-bottom: 20px;">Tambahkan mobil pertama Anda untuk memulai bisnis rental</p>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#carModal">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white' width='18' height='18'%3E%3Cpath d='M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z'/%3E%3C/svg%3E" alt="Plus">
+                            Tambah Mobil Sekarang
+                        </button>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = data.map(m => `
+                    <div class="col-md-4">
+                        <div class="car-card">
+                            <div class="car-image" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)">
+                                ${m.image_url 
+                                    ? `<img src="${m.image_url}" alt="${m.nama}" style="width: 90%; height: auto; object-fit: contain;">`
+                                    : `<div style="padding: 60px; text-align: center; color: #fff; opacity: 0.5;">📷 No Image</div>`
+                                }
+                                <span class="car-status ${m.status === 'tersedia' ? 'badge-available' : 'badge-rented'}">
+                                    ${m.status === 'tersedia' ? 'Tersedia' : 'Disewa'}
+                                </span>
+                            </div>
+                            <div class="car-info">
+                                <div class="car-title">${m.nama}</div>
+                                <div class="car-plate">${m.plat_nomor}</div>
+                                <div class="car-specs">
+                                    <div class="spec-item">${m.kursi} Kursi</div>
+                                    <div class="spec-item">${m.transmisi}</div>
+                                    <div class="spec-item">${m.bahanbakar}</div>
+                                </div>
+                                <div class="car-price">
+                                    ${formatCurrency(m.hargaperhari)} <span>/hari</span>
+                                </div>
+                                <div class="car-actions">
+                                    <button class="btn btn-outline btn-sm" onclick="window.startEditCar('${m.id}')">Edit</button>
+                                    ${m.status === 'tersedia' 
+                                        ? `<button class="btn btn-primary btn-sm" onclick="window.showPage('rentals')">Sewa</button>`
+                                        : `<button class="btn btn-success btn-sm" onclick="window.showPage('returns')">Kembali</button>`
+                                    }
+                                </div>
                             </div>
                         </div>
-                        <div class="car-price">
-                            ${formatCurrency(m.hargaperhari)} <span>/hari</span>
-                        </div>
-                        <div class="car-actions">
-                            <button class="btn btn-outline btn-sm" onclick="window.startEditCar('${m.id}')">Edit</button>
-                            ${m.status === 'tersedia' 
-                                ? `<button class="btn btn-primary btn-sm" onclick="window.showPage('rentals')">Sewa</button>`
-                                : `<button class="btn btn-success btn-sm" onclick="window.showPage('returns')">Kembali</button>`
-                            }
-                        </div>
                     </div>
-                </div>
-            `).join('');
+                `).join('');
+            }
             
             console.log('✅ Cars loaded:', data.length);
         } catch (err) {
@@ -641,7 +663,6 @@ async function loadDashboard() {
             modal.dataset.editId = data.id;
             modal.querySelector('.modal-title').textContent = 'Edit Mobil';
             
-            // Split nama jadi merek dan model
             const namaParts = data.nama.split(' ');
             const merek = namaParts[0];
             const model = namaParts.slice(1).join(' ');
@@ -654,7 +675,6 @@ async function loadDashboard() {
             document.getElementById('carBahanBakar').value = data.bahanbakar;
             document.getElementById('carHarga').value = data.hargaperhari;
             
-            // Show current image if exists
             const preview = document.getElementById('imagePreview');
             const previewContainer = document.getElementById('imagePreviewContainer');
             if (data.image_url && preview) {
@@ -675,7 +695,6 @@ async function loadDashboard() {
             const modal = document.getElementById('carModal');
             const editId = modal.dataset.editId;
             
-            // Get all values
             const merek = document.getElementById('carMerek')?.value || '';
             const model = document.getElementById('carModel')?.value.trim();
             const plat = document.getElementById('carPlat')?.value.trim();
@@ -685,9 +704,6 @@ async function loadDashboard() {
             const harga = parseInt(document.getElementById('carHarga')?.value, 10);
             const imageFile = document.getElementById('carImageInput')?.files[0];
             
-            console.log('📝 Form data:', { merek, model, plat, kursi, transmisi, bahanbakar, harga });
-            
-            // Validation
             if (!model || !plat || !harga) {
                 alert('❌ Lengkapi data: Model, Plat Nomor, dan Harga wajib diisi!');
                 return;
@@ -698,7 +714,6 @@ async function loadDashboard() {
                 return;
             }
             
-            // Prepare payload
             const nama = merek ? `${merek} ${model}` : model;
             const payload = {
                 nama: nama,
@@ -709,22 +724,16 @@ async function loadDashboard() {
                 hargaperhari: harga
             };
             
-            console.log('💾 Payload:', payload);
-            
             let carId = editId;
             
-            // Insert or Update
             if (editId) {
-                console.log('🔄 Updating car:', editId);
                 const { error } = await supabase
                     .from('mobil')
                     .update(payload)
                     .eq('id', editId);
                 
                 if (error) throw error;
-                console.log('✅ Car updated');
             } else {
-                console.log('➕ Inserting new car');
                 const { data: newCar, error } = await supabase
                     .from('mobil')
                     .insert({
@@ -736,29 +745,21 @@ async function loadDashboard() {
                 
                 if (error) throw error;
                 carId = newCar.id;
-                console.log('✅ Car inserted:', carId);
             }
             
-            // Upload image if provided
             if (imageFile && carId) {
                 try {
-                    console.log('📤 Uploading image...');
                     const imageUrl = await uploadCarImage(imageFile, carId);
-                    console.log('✅ Image uploaded:', imageUrl);
-                    
-                    // Update car with image URL
                     await supabase
                         .from('mobil')
                         .update({ image_url: imageUrl })
                         .eq('id', carId);
-                    
                 } catch (imgErr) {
                     console.error('⚠️ Image upload failed:', imgErr);
-                    alert('⚠️ Mobil tersimpan, tapi gagal upload gambar: ' + imgErr.message);
+                    alert('⚠️ Mobil tersimpan, tapi gagal upload gambar');
                 }
             }
             
-            // Close modal and refresh
             const bsModal = bootstrap.Modal.getInstance(modal);
             if (bsModal) bsModal.hide();
             
@@ -770,7 +771,7 @@ async function loadDashboard() {
             await loadDashboard();
             
             alert('✅ Mobil berhasil disimpan!');
-            console.log('✅ Save car completed');
+            console.log('✅ Car saved');
             
         } catch (err) {
             console.error('❌ Save car error:', err);
@@ -802,27 +803,39 @@ async function loadDashboard() {
             const tbody = document.querySelector('#page-rentals table tbody');
             if (!tbody) return;
             
-            tbody.innerHTML = (data || []).map(r => `
-                <tr>
-                    <td><strong>${r.invoice}</strong></td>
-                    <td>${r.pelanggan?.nama || '-'}</td>
-                    <td>${r.mobil?.nama || '-'}</td>
-                    <td>${formatDateRange(r.tanggalsewa, r.tanggalkembali)}</td>
-                    <td><strong>${formatCurrency(r.totalharga)}</strong></td>
-                    <td>
-                        <span class="badge-status ${r.status === 'Sedang Berlangsung' ? 'badge-ongoing' : 'badge-completed'}">
-                            ${r.status}
-                        </span>
-                    </td>
-                    <td>
-                        <button class="btn btn-outline btn-sm">Detail</button>
-                        ${r.status === 'Sedang Berlangsung' 
-                            ? `<button class="btn btn-success btn-sm" onclick="window.completeRental('${r.id}')">Selesai</button>`
-                            : ''
-                        }
-                    </td>
-                </tr>
-            `).join('');
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px; color: #6c757d;">
+                            <div style="font-size: 48px; margin-bottom: 10px;">📋</div>
+                            <strong>Belum Ada Transaksi</strong><br>
+                            <small>Buat transaksi penyewaan pertama Anda</small>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                tbody.innerHTML = data.map(r => `
+                    <tr>
+                        <td><strong>${r.invoice}</strong></td>
+                        <td>${r.pelanggan?.nama || '-'}</td>
+                        <td>${r.mobil?.nama || '-'}</td>
+                        <td>${formatDateRange(r.tanggalsewa, r.tanggalkembali)}</td>
+                        <td><strong>${formatCurrency(r.totalharga)}</strong></td>
+                        <td>
+                            <span class="badge-status ${r.status === 'Sedang Berlangsung' ? 'badge-ongoing' : 'badge-completed'}">
+                                ${r.status}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn btn-outline btn-sm">Detail</button>
+                            ${r.status === 'Sedang Berlangsung' 
+                                ? `<button class="btn btn-success btn-sm" onclick="window.completeRental('${r.id}')">Selesai</button>`
+                                : ''
+                            }
+                        </td>
+                    </tr>
+                `).join('');
+            }
             
             console.log('✅ Rentals loaded:', data.length);
         } catch (err) {
@@ -842,14 +855,14 @@ async function loadDashboard() {
             const carSelect = document.getElementById('rentalCar');
             
             if (customerSelect) {
-                customerSelect.innerHTML = '<option value="">Pilih Pelanggan</option>' + 
+                customerSelect.innerHTML = '<option value="">-- Pilih Pelanggan --</option>' + 
                     (custRes.data || []).map(c => 
                         `<option value="${c.id}">${c.nama}</option>`
                     ).join('');
             }
             
             if (carSelect) {
-                carSelect.innerHTML = '<option value="">Pilih Mobil</option>' +
+                carSelect.innerHTML = '<option value="">-- Pilih Mobil --</option>' +
                     (carRes.data || []).map(c => 
                         `<option value="${c.id}" data-harga="${c.hargaperhari}">${c.nama} - ${formatCurrency(c.hargaperhari)}/hari</option>`
                     ).join('');
@@ -859,155 +872,181 @@ async function loadDashboard() {
             bsModal.show();
         } catch (err) {
             console.error('❌ Start create rental error:', err);
+            alert('Gagal membuka form penyewaan: ' + err.message);
         }
     }
 
     async function saveRental() {
-    try {
-        const modal = document.getElementById('rentalModal');
-        
-        const pelangganId = document.getElementById('rentalCustomer')?.value;
-        const mobilId = document.getElementById('rentalCar')?.value;
-        const tanggalSewa = document.getElementById('rentalStartDate')?.value;
-        const tanggalKembali = document.getElementById('rentalEndDate')?.value;
-        
-        // Validation
-        if (!pelangganId || !mobilId || !tanggalSewa || !tanggalKembali) {
-            alert('❌ Lengkapi semua data penyewaan!');
-            return;
+        try {
+            const modal = document.getElementById('rentalModal');
+            
+            const pelangganId = document.getElementById('rentalCustomer')?.value;
+            const mobilId = document.getElementById('rentalCar')?.value;
+            const tanggalSewa = document.getElementById('rentalStartDate')?.value;
+            const tanggalKembali = document.getElementById('rentalEndDate')?.value;
+            
+            if (!pelangganId || !mobilId || !tanggalSewa || !tanggalKembali) {
+                alert('❌ Lengkapi semua data penyewaan!');
+                return;
+            }
+            
+            const startDate = new Date(tanggalSewa);
+            const endDate = new Date(tanggalKembali);
+            
+            if (endDate <= startDate) {
+                alert('❌ Tanggal kembali harus lebih dari tanggal mulai sewa!');
+                return;
+            }
+            
+            // ✅ Hitung durasi hari
+            const durasiHari = Math.max(1, Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)));
+            
+            const carSelect = document.getElementById('rentalCar');
+            const selectedOption = carSelect.selectedOptions[0];
+            
+            if (!selectedOption || !selectedOption.dataset.harga) {
+                alert('❌ Data mobil tidak valid!');
+                return;
+            }
+            
+            const hargaPerHari = parseInt(selectedOption.dataset.harga, 10);
+            const totalHarga = durasiHari * hargaPerHari;
+            
+            // Generate invoice
+            const now = new Date();
+            const dateStr = now.toISOString().slice(0, 10).replace(/-/g, '');
+            
+            const { data: lastInv } = await supabase
+                .from('penyewaan')
+                .select('invoice')
+                .like('invoice', `INV-${dateStr}%`)
+                .order('invoice', { ascending: false })
+                .limit(1)
+                .single();
+            
+            const lastNum = lastInv ? parseInt(lastInv.invoice.split('-').pop()) : 0;
+            const invoice = `INV-${dateStr}-${String(lastNum + 1).padStart(4, '0')}`;
+            
+            console.log('📝 Creating rental:', { invoice, durasiHari, totalHarga });
+            
+            // ✅ INSERT dengan field durasihari
+            const { error: insertError } = await supabase
+                .from('penyewaan')
+                .insert({
+                    invoice: invoice,
+                    pelangganid: pelangganId,
+                    mobilid: mobilId,
+                    tanggalsewa: tanggalSewa,
+                    tanggalkembali: tanggalKembali,
+                    durasihari: durasiHari,  // ✅ FIELD YANG DIPERLUKAN
+                    totalharga: totalHarga,
+                    status: 'Sedang Berlangsung'
+                });
+            
+            if (insertError) throw insertError;
+            
+            // Update status mobil
+            const { error: updateError } = await supabase
+                .from('mobil')
+                .update({ status: 'disewa' })
+                .eq('id', mobilId);
+            
+            if (updateError) throw updateError;
+            
+            // Close modal
+            const bsModal = bootstrap.Modal.getInstance(modal);
+            if (bsModal) bsModal.hide();
+            
+            document.getElementById('rentalForm').reset();
+            
+            // Reload data
+            await Promise.all([
+                loadRentals(),
+                loadCars(),
+                loadDashboard()
+            ]);
+            
+            alert(
+                `✅ Transaksi Penyewaan Berhasil!\n\n` +
+                `📋 Invoice: ${invoice}\n` +
+                `📅 Durasi: ${durasiHari} hari\n` +
+                `💰 Total: ${formatCurrency(totalHarga)}`
+            );
+            
+            console.log('✅ Rental created successfully');
+            
+        } catch (err) {
+            console.error('❌ Save rental error:', err);
+            alert('❌ Gagal menyimpan penyewaan: ' + (err.message || 'Unknown error'));
         }
-        
-        // Parse dates
-        const startDate = new Date(tanggalSewa);
-        const endDate = new Date(tanggalKembali);
-        
-        // Validate date range
-        if (endDate <= startDate) {
-            alert('❌ Tanggal kembali harus lebih dari tanggal mulai sewa!');
-            return;
-        }
-        
-        // ✅ Calculate duration in days
-        const durasiHari = Math.max(1, Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)));
-        
-        // Get car price
-        const carSelect = document.getElementById('rentalCar');
-        const selectedOption = carSelect.selectedOptions[0];
-        
-        if (!selectedOption || !selectedOption.dataset.harga) {
-            alert('❌ Data mobil tidak valid!');
-            return;
-        }
-        
-        const hargaPerHari = parseInt(selectedOption.dataset.harga, 10);
-        
-        if (!hargaPerHari || hargaPerHari <= 0) {
-            alert('❌ Harga mobil tidak valid!');
-            return;
-        }
-        
-        // Calculate total price
-        const totalHarga = durasiHari * hargaPerHari;
-        
-        console.log('📝 Rental calculation:', {
-            pelangganId,
-            mobilId,
-            tanggalSewa,
-            tanggalKembali,
-            durasiHari,
-            hargaPerHari,
-            totalHarga
-        });
-        
-        // Generate invoice number
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const dateStr = `${year}${month}${day}`;
-        
-        const { data: lastInv } = await supabase
-            .from('penyewaan')
-            .select('invoice')
-            .like('invoice', `INV-${dateStr}%`)
-            .order('invoice', { ascending: false })
-            .limit(1)
-            .single();
-        
-        const lastNum = lastInv ? parseInt(lastInv.invoice.split('-').pop()) : 0;
-        const invoice = `INV-${dateStr}-${String(lastNum + 1).padStart(4, '0')}`;
-        
-        console.log('🎫 Generated invoice:', invoice);
-        
-        // ✅ INSERT penyewaan with durasihari field
-        const { data: newRental, error: insertError } = await supabase
-            .from('penyewaan')
-            .insert({
-                invoice: invoice,
-                pelangganid: pelangganId,
-                mobilid: mobilId,
-                tanggalsewa: tanggalSewa,
-                tanggalkembali: tanggalKembali,
-                durasihari: durasiHari,        // ✅ FIELD YANG DIPERLUKAN
-                totalharga: totalHarga,
-                status: 'Sedang Berlangsung'
-            })
-            .select()
-            .single();
-        
-        if (insertError) {
-            console.error('❌ Insert rental error:', insertError);
-            throw new Error(insertError.message || 'Gagal insert data penyewaan');
-        }
-        
-        console.log('✅ Rental inserted:', newRental);
-        
-        // Update car status to 'disewa'
-        const { error: updateCarError } = await supabase
-            .from('mobil')
-            .update({ status: 'disewa' })
-            .eq('id', mobilId);
-        
-        if (updateCarError) {
-            console.error('❌ Update car status error:', updateCarError);
-            throw new Error(updateCarError.message || 'Gagal update status mobil');
-        }
-        
-        console.log('✅ Car status updated to "disewa"');
-        
-        // Close modal
-        const bsModal = bootstrap.Modal.getInstance(modal);
-        if (bsModal) bsModal.hide();
-        
-        // Reset form
-        document.getElementById('rentalForm').reset();
-        
-        // Reload all data
-        await Promise.all([
-            loadRentals(),
-            loadCars(),
-            loadDashboard()
-        ]);
-        
-        // Success message
-        alert(
-            `✅ Transaksi Penyewaan Berhasil Dibuat!\n\n` +
-            `📋 Invoice: ${invoice}\n` +
-            `📅 Durasi: ${durasiHari} hari\n` +
-            `💰 Total Biaya: ${formatCurrency(totalHarga)}`
-        );
-        
-        console.log('✅ Rental process completed successfully');
-        
-    } catch (err) {
-        console.error('❌ Save rental error:', err);
-        alert('❌ Gagal menyimpan penyewaan:\n\n' + (err.message || 'Terjadi kesalahan tidak diketahui'));
     }
-}
 
+    async function completeRental(id) {
+        if (!confirm('⚠️ Konfirmasi pengembalian mobil?\n\nPastikan mobil sudah diperiksa dan dalam kondisi baik.')) {
+            return;
+        }
+        
+        try {
+            console.log('🔄 Processing return for rental ID:', id);
+            
+            const { data: rental, error: getRentalError } = await supabase
+                .from('penyewaan')
+                .select('mobilid, tanggalkembali, totalharga')
+                .eq('id', id)
+                .single();
+            
+            if (getRentalError || !rental) {
+                throw new Error('Data penyewaan tidak ditemukan!');
+            }
+            
+            // Calculate penalty
+            const today = new Date();
+            const returnDate = new Date(rental.tanggalkembali);
+            const daysLate = Math.max(0, Math.ceil((today - returnDate) / (1000 * 60 * 60 * 24)));
+            const denda = daysLate > 0 ? daysLate * 50000 : 0;
+            
+            console.log('📅 Days late:', daysLate, 'Penalty:', denda);
+            
+            // Update rental status
+            const { error: updateRentalError } = await supabase
+                .from('penyewaan')
+                .update({ status: 'Selesai' })
+                .eq('id', id);
+            
+            if (updateRentalError) throw updateRentalError;
+            
+            // Update car status
+            const { error: updateCarError } = await supabase
+                .from('mobil')
+                .update({ status: 'tersedia' })
+                .eq('id', rental.mobilid);
+            
+            if (updateCarError) throw updateCarError;
+            
+            // Reload all data
+            await Promise.all([
+                loadRentals(),
+                loadCars(),
+                loadDashboard(),
+                loadReturns(),
+                loadTransactions()
+            ]);
+            
+            const message = denda > 0 
+                ? `✅ Pengembalian Berhasil!\n\n⚠️ Terlambat ${daysLate} hari\n💰 Denda: ${formatCurrency(denda)}\n💵 Total Bayar: ${formatCurrency(rental.totalharga + denda)}`
+                : `✅ Pengembalian Berhasil!\n\n✨ Tepat waktu, tidak ada denda\n💵 Total: ${formatCurrency(rental.totalharga)}`;
+            
+            alert(message);
+            console.log('✅ Rental return completed');
+            
+        } catch (err) {
+            console.error('❌ Complete rental error:', err);
+            alert('❌ Gagal proses pengembalian: ' + (err.message || 'Unknown error'));
+        }
+    }
 
     // ============================================
-    // BUG FIX #2: HALAMAN PENGEMBALIAN
+    // RETURNS PAGE
     // ============================================
     async function loadReturns() {
         try {
@@ -1043,7 +1082,7 @@ async function loadDashboard() {
                 tbody.innerHTML = data.map(r => {
                     const today = new Date();
                     const returnDate = new Date(r.tanggalkembali);
-                    const daysLate = Math.max(0, Math.ceil((today - returnDate) / (1000*60*60*24)));
+                    const daysLate = Math.max(0, Math.ceil((today - returnDate) / (1000 * 60 * 60 * 24)));
                     const denda = daysLate > 0 ? daysLate * 50000 : 0;
                     const totalBayar = r.totalharga + denda;
 
@@ -1077,7 +1116,7 @@ async function loadDashboard() {
     }
 
     // ============================================
-    // BUG FIX #3: HALAMAN LAPORAN KEUANGAN
+    // TRANSACTIONS PAGE
     // ============================================
     async function loadTransactions() {
         try {
