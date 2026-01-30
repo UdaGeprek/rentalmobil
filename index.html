@@ -406,133 +406,152 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label">Merek</label>
-                    <select class="form-control form-select">
-                        <option value="">Pilih Merek</option>
-                        <option value="Toyota">Toyota</option>
-                        <option value="Honda">Honda</option>
-                        <option value="Mitsubishi">Mitsubishi</option>
-                        <option value="Daihatsu">Daihatsu</option>
-                        <option value="Suzuki">Suzuki</option>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Model</label>
-                    <input type="text" class="form-control" placeholder="Contoh: Camry, Civic">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Nomor Polisi</label>
-                    <input type="text" class="form-control" placeholder="B 1234 ABC">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Harga per Hari</label>
-                    <input type="number" class="form-control" placeholder="500000">
-                </div>
-                
-                <!-- NEW: Image Upload -->
-                <div class="mb-3">
-                    <label class="form-label">Foto Mobil</label>
-                    <input type="file" id="carImageInput" class="form-control" accept="image/*">
-                    <small class="text-muted">Format: JPG, PNG, max 2MB</small>
-                </div>
-                
-                <!-- NEW: Image Preview -->
-                <div id="imagePreviewContainer" style="display: none; margin-top: 10px;">
-                    <label class="form-label">Preview:</label>
-                    <img id="imagePreview" src="" alt="Preview" style="width: 100%; max-height: 200px; object-fit: contain; border: 1px solid #ddd; border-radius: 8px;">
-                </div>
+                <form id="carForm">
+                    <div class="mb-3">
+                        <label class="form-label">Merek</label>
+                        <select id="carMerek" class="form-control form-select">
+                            <option value="">Pilih Merek</option>
+                            <option value="Toyota">Toyota</option>
+                            <option value="Honda">Honda</option>
+                            <option value="Mitsubishi">Mitsubishi</option>
+                            <option value="Daihatsu">Daihatsu</option>
+                            <option value="Suzuki">Suzuki</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Model</label>
+                        <input type="text" id="carModel" class="form-control" placeholder="Contoh: Camry, Civic">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Nomor Polisi</label>
+                        <input type="text" id="carPlat" class="form-control" placeholder="B 1234 ABC">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Jumlah Kursi</label>
+                        <input type="number" id="carKursi" class="form-control" placeholder="5" value="5">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Transmisi</label>
+                        <select id="carTransmisi" class="form-control form-select">
+                            <option value="Automatic">Automatic</option>
+                            <option value="Manual">Manual</option>
+                            <option value="CVT">CVT</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Bahan Bakar</label>
+                        <select id="carBahanBakar" class="form-control form-select">
+                            <option value="Bensin">Bensin</option>
+                            <option value="Diesel">Diesel</option>
+                            <option value="Listrik">Listrik</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Harga per Hari (Rp)</label>
+                        <input type="number" id="carHarga" class="form-control" placeholder="500000">
+                    </div>
+                    
+                    <!-- Image Upload -->
+                    <div class="mb-3">
+                        <label class="form-label">Foto Mobil (Optional)</label>
+                        <input type="file" id="carImageInput" class="form-control" accept="image/*">
+                        <small class="text-muted">Format: JPG, PNG, max 2MB</small>
+                    </div>
+                    
+                    <!-- Image Preview -->
+                    <div id="imagePreviewContainer" style="display: none; margin-top: 10px;">
+                        <label class="form-label">Preview:</label>
+                        <img id="imagePreview" src="" alt="Preview" style="width: 100%; max-height: 200px; object-fit: contain; border: 1px solid #ddd; border-radius: 8px;">
+                    </div>
+                </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Batal</button>
-                <button type="button" class="btn btn-primary" onclick="saveCar()">Simpan</button>
+                <button type="button" class="btn btn-primary" id="saveCarBtn">Simpan</button>
             </div>
         </div>
     </div>
 </div>
 
 
+
     <!-- Customer Modal -->
-    <div class="modal fade" id="customerModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Tambah Pelanggan</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
+<div class="modal fade" id="customerModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tambah Pelanggan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="customerForm">
                     <div class="mb-3">
-                        <label class="form-label">NIK / KTP</label>
-                        <input type="text" class="form-control" placeholder="3175010101010001">
+                        <label class="form-label">NIK (KTP)</label>
+                        <input type="text" id="customerNIK" class="form-control" placeholder="3175010101010001">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Nama Lengkap</label>
-                        <input type="text" class="form-control" placeholder="Ahmad Fauzi">
+                        <input type="text" id="customerNama" class="form-control" placeholder="Ahmad Fauzi">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Telepon</label>
-                        <input type="text" class="form-control" placeholder="081234567890">
+                        <input type="text" id="customerTelepon" class="form-control" placeholder="081234567890">
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Simpan</button>
-                </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary" id="saveCustomerBtn">Simpan</button>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Rental Modal -->
-    <div class="modal fade" id="rentalModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Penyewaan Baru</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
+   <!-- Rental Modal -->
+<div class="modal fade" id="rentalModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Penyewaan Baru</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="rentalForm">
                     <div class="mb-3">
                         <label class="form-label">Pelanggan</label>
-                        <select class="form-control form-select">
-                            <option>Ahmad Fauzi</option>
-                            <option>Siti Nurhaliza</option>
-                            <option>Budi Santoso</option>
+                        <select id="rentalCustomer" class="form-control form-select">
+                            <option value="">Pilih Pelanggan</option>
                         </select>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Mobil</label>
-                        <select class="form-control form-select">
-                            <option>Toyota Camry - B 1234 ABC (Rp 500.000/hari)</option>
-                            <option>Toyota Fortuner - B 5678 DEF (Rp 750.000/hari)</option>
+                        <select id="rentalCar" class="form-control form-select">
+                            <option value="">Pilih Mobil</option>
                         </select>
                     </div>
                     <div class="row">
                         <div class="col-6">
                             <div class="mb-3">
                                 <label class="form-label">Tanggal Sewa</label>
-                                <input type="date" class="form-control">
+                                <input type="date" id="rentalStartDate" class="form-control">
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="mb-3">
                                 <label class="form-label">Tanggal Kembali</label>
-                                <input type="date" class="form-control">
+                                <input type="date" id="rentalEndDate" class="form-control">
                             </div>
                         </div>
                     </div>
-                    <div class="p-3 bg-light rounded">
-                        <strong>Estimasi Total:</strong>
-                        <div style="font-size: 24px; font-weight: bold; color: #3498DB;">Rp 3.500.000</div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Buat Penyewaan</button>
-                </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary" id="saveRentalBtn">Buat Penyewaan</button>
             </div>
         </div>
     </div>
-
+</div>
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -545,7 +564,7 @@
 
 <!-- Custom Script -->
 <script src="supabase-script.js"></script>
-
-
 </body>
 </html>
+
+
