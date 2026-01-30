@@ -145,7 +145,7 @@
             errorMsg.style.display = 'block';
         } finally {
             btn.disabled = false;
-            btn.textContent = 'MASUK';
+            btn.textContent = 'Masuk ke Dashboard';
         }
     }
 
@@ -223,16 +223,23 @@
         
         const titles = {
             'dashboard': 'Dashboard',
-            'cars': 'Data Mobil',
-            'customers': 'Data Pelanggan',
-            'rentals': 'Data Penyewaan',
-            'returns': 'Pengembalian',
-            'transactions': 'Keuangan'
+            'cars': 'Kelola Mobil',
+            'customers': 'Database Pelanggan',
+            'rentals': 'Transaksi Sewa',
+            'returns': 'Proses Pengembalian',
+            'transactions': 'Laporan Keuangan'
         };
         
         const titleEl = document.getElementById('pageTitle');
         if (titleEl && titles[pageName]) {
             titleEl.textContent = titles[pageName];
+        }
+
+        // Load data saat halaman dibuka
+        if (pageName === 'returns') {
+            loadReturns();
+        } else if (pageName === 'transactions') {
+            loadTransactions();
         }
     }
 
@@ -252,8 +259,16 @@
         if (!start || !end) return '-';
         const s = new Date(start);
         const e = new Date(end);
-        const opts = { day: '2-digit', month: 'short' };
+        const opts = { day: '2-digit', month: 'short', year: 'numeric' };
         return `${s.toLocaleDateString('id-ID', opts)} - ${e.toLocaleDateString('id-ID', opts)}`;
+    }
+
+    function formatDateTime(dateStr) {
+        if (!dateStr) return '-';
+        const d = new Date(dateStr);
+        const dateOpts = { day: '2-digit', month: 'short', year: 'numeric' };
+        const timeOpts = { hour: '2-digit', minute: '2-digit' };
+        return `${d.toLocaleDateString('id-ID', dateOpts)} ${d.toLocaleTimeString('id-ID', timeOpts)}`;
     }
 
     // ============================================
@@ -335,7 +350,7 @@
     }
 
     // ============================================
-    // DASHBOARD
+    // DASHBOARD - BUG FIX #1: PERHITUNGAN TERSEDIA
     // ============================================
     async function loadDashboard() {
         try {
@@ -348,8 +363,10 @@
             const rentals = rentalsRes.data || [];
 
             const totalMobil = cars.length;
-            const tersedia = cars.filter(c => c.status === 'tersedia').length;
+            
+            // 🔧 BUG FIX: Filter yang benar
             const disewa = cars.filter(c => c.status === 'disewa').length;
+            const tersedia = totalMobil - disewa; // ✅ 11 - 2 = 9 (BENAR!)
             
             const pendapatan = rentals
                 .filter(r => r.status === 'Selesai' || r.status === 'Sedang Berlangsung')
@@ -361,7 +378,7 @@
             if (stats[2]) stats[2].textContent = disewa;
             if (stats[3]) stats[3].textContent = formatCurrency(pendapatan);
 
-            console.log('✅ Dashboard loaded');
+            console.log('✅ Dashboard loaded - Total:', totalMobil, 'Tersedia:', tersedia, 'Disewa:', disewa);
         } catch (err) {
             console.error('❌ Load dashboard error:', err);
         }
@@ -750,7 +767,7 @@
                     <td>
                         <button class="btn btn-outline btn-sm">Detail</button>
                         ${r.status === 'Sedang Berlangsung' 
-                            ? `<button class="btn btn-success btn-sm" onclick="window.completeRental('${r.id}')">Kembali</button>`
+                            ? `<button class="btn btn-success btn-sm" onclick="window.completeRental('${r.id}')">Selesai</button>`
                             : ''
                         }
                     </td>
@@ -887,12 +904,166 @@
             await loadRentals();
             await loadCars();
             await loadDashboard();
+            await loadReturns(); // Refresh returns page
             
             alert('✅ Pengembalian berhasil!');
             console.log('✅ Rental completed');
         } catch (err) {
             console.error('❌ Complete rental error:', err);
             alert('Gagal selesaikan penyewaan!');
+        }
+    }
+
+    // ============================================
+    // BUG FIX #2: HALAMAN PENGEMBALIAN
+    // ============================================
+    async function loadReturns() {
+        try {
+            const { data, error } = await supabase
+                .from('penyewaan')
+                .select(`
+                    id,
+                    invoice,
+                    tanggalkembali,
+                    totalharga,
+                    pelanggan:pelangganid(nama),
+                    mobil:mobilid(nama)
+                `)
+                .eq('status', 'Sedang Berlangsung')
+                .order('tanggalkembali', { ascending: true });
+            
+            if (error) throw error;
+            
+            const tbody = document.querySelector('#page-returns table tbody');
+            if (!tbody) return;
+
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 40px; color: #6c757d;">
+                            <div style="font-size: 48px; margin-bottom: 10px;">✅</div>
+                            <strong>Tidak Ada Mobil yang Perlu Dikembalikan</strong><br>
+                            <small>Semua mobil sudah dikembalikan atau masih dalam masa sewa</small>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                tbody.innerHTML = data.map(r => {
+                    const today = new Date();
+                    const returnDate = new Date(r.tanggalkembali);
+                    const daysLate = Math.max(0, Math.ceil((today - returnDate) / (1000*60*60*24)));
+                    const denda = daysLate > 0 ? daysLate * 50000 : 0;
+                    const totalBayar = r.totalharga + denda;
+
+                    return `
+                        <tr>
+                            <td><strong>${r.invoice}</strong></td>
+                            <td>${r.pelanggan?.nama || '-'}</td>
+                            <td>${r.mobil?.nama || '-'}</td>
+                            <td>${new Date(r.tanggalkembali).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                            <td>
+                                ${denda > 0 
+                                    ? `<span style="color: #F44336; font-weight: 600;">${formatCurrency(denda)}</span><br><small style="color: #6c757d;">Terlambat ${daysLate} hari</small>` 
+                                    : '<span style="color: #4CAF50;">Tidak ada denda</span>'
+                                }
+                            </td>
+                            <td>
+                                <strong style="color: #1e3a5f; font-size: 16px;">${formatCurrency(totalBayar)}</strong><br>
+                                <button class="btn btn-success btn-sm mt-2" onclick="window.completeRental('${r.id}')" style="margin-top: 8px;">
+                                    ✅ Proses Pengembalian
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+            
+            console.log('✅ Returns loaded:', data.length);
+        } catch (err) {
+            console.error('❌ Load returns error:', err);
+        }
+    }
+
+    // ============================================
+    // BUG FIX #3: HALAMAN LAPORAN KEUANGAN
+    // ============================================
+    async function loadTransactions() {
+        try {
+            const { data, error } = await supabase
+                .from('penyewaan')
+                .select(`
+                    id,
+                    invoice,
+                    totalharga,
+                    status,
+                    created_at,
+                    pelanggan:pelangganid(nama)
+                `)
+                .order('created_at', { ascending: false });
+            
+            if (error) throw error;
+
+            // Calculate stats
+            const totalPendapatan = (data || [])
+                .filter(r => r.status === 'Selesai')
+                .reduce((sum, r) => sum + (Number(r.totalharga) || 0), 0);
+
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+
+            const pendapatanBulanIni = (data || [])
+                .filter(r => {
+                    if (r.status !== 'Selesai') return false;
+                    const d = new Date(r.created_at);
+                    return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+                })
+                .reduce((sum, r) => sum + (Number(r.totalharga) || 0), 0);
+
+            const totalTransaksiSelesai = (data || []).filter(r => r.status === 'Selesai').length;
+
+            // Update financial stats
+            const finStats = document.querySelectorAll('#page-transactions .stat-card .stat-info h3');
+            if (finStats[0]) finStats[0].textContent = formatCurrency(totalPendapatan);
+            if (finStats[1]) finStats[1].textContent = formatCurrency(pendapatanBulanIni);
+            if (finStats[2]) finStats[2].textContent = totalTransaksiSelesai;
+
+            // Update table
+            const tbody = document.querySelector('#page-transactions table tbody');
+            if (!tbody) return;
+
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 40px; color: #6c757d;">
+                            <div style="font-size: 48px; margin-bottom: 10px;">💳</div>
+                            <strong>Belum Ada Riwayat Transaksi</strong><br>
+                            <small>Transaksi keuangan akan tercatat secara otomatis</small>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                tbody.innerHTML = data.map(r => `
+                    <tr>
+                        <td><strong>${r.invoice}</strong></td>
+                        <td>${formatDateTime(r.created_at)}</td>
+                        <td>
+                            <span class="badge-status ${r.status === 'Selesai' ? 'badge-completed' : 'badge-ongoing'}">
+                                ${r.status === 'Selesai' ? 'Pembayaran Selesai' : 'Pembayaran Tertunda'}
+                            </span>
+                        </td>
+                        <td>
+                            <strong style="color: ${r.status === 'Selesai' ? '#4CAF50' : '#FF9800'}; font-size: 15px;">
+                                ${r.status === 'Selesai' ? '+ ' : ''}${formatCurrency(r.totalharga)}
+                            </strong>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+            
+            console.log('✅ Transactions loaded:', data.length);
+        } catch (err) {
+            console.error('❌ Load transactions error:', err);
         }
     }
 
