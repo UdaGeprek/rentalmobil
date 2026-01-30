@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Rental Mobil - Car Rental Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- Login Page -->
+    <div id="loginPage" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-logo">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z'/%3E%3C/svg%3E" alt="Car Logo">
+                </div>
+                <h4 style="margin: 0; font-weight: 700;">Sistem Rental Mobil</h4>
+                <p style="margin: 8px 0 0; opacity: 0.9;">Masuk sebagai Administrator</p>
+            </div>
+            <div class="login-body">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" class="form-control" placeholder="susilo57@gmail.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Kata Sandi</label>
+                        <input type="password" id="password" class="form-control" placeholder="Masukkan kata sandi" required>
+                    </div>
+                    <div id="loginError" style="color: #E74C3C; font-size: 13px; margin-bottom: 15px; display: none; text-align: center; padding: 10px; background: rgba(231,76,60,0.1); border-radius: 8px;">
+                        Email atau kata sandi salah!
+                    </div>
+                    <button type="submit" class="btn btn-login">
+                        MASUK
+                    </button>
+                </form>
+            </div>
+            <div class="login-footer">
+                <small style="color: #6c757d;">Hanya untuk administrator yang berwenang</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application (Hidden by default) -->
+    <div id="mainApp" style="display: none;">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z'/%3E%3C/svg%3E" alt="Car Logo">
+                </div>
+                <div class="sidebar-title">
+                    <h5>Car Rental</h5>
+                    <small>Management System</small>
+                </div>
+            </div>
+            <nav style="padding: 15px 0;">
+                <div class="nav-item active" onclick="showPage('dashboard', this)">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z'/%3E%3C/svg%3E" alt="Dashboard">
+                    <span>Dashboard</span>
+                </div>
+                <div class="nav-item" onclick="showPage('cars', this)">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z'/%3E%3C/svg%3E" alt="Mobil">
+                    <span>Mobil</span>
+                </div>
+                <div class="nav-item" onclick="showPage('customers', this)">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z'/%3E%3C/svg%3E" alt="Pelanggan">
+                    <span>Pelanggan</span>
+                </div>
+                <div class="nav-item" onclick="showPage('rentals', this)">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z'/%3E%3C/svg%3E" alt="Penyewaan">
+                    <span>Penyewaan</span>
+                </div>
+                <div class="nav-item" onclick="showPage('returns', this)">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z'/%3E%3C/svg%3E" alt="Pengembalian">
+                    <span>Pengembalian</span>
+                </div>
+                <div class="nav-item" onclick="showPage('transactions', this)">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z'/%3E%3C/svg%3E" alt="Keuangan">
+                    <span>Keuangan</span>
+                </div>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">A</div>
+                    <div class="user-details">
+                        <h6>Administrator</h6>
+                        <small>Admin</small>
+                    </div>
+                </div>
+                <button class="logout-btn" onclick="logout()">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z'/%3E%3C/svg%3E" alt="Logout">
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-title">
+                    <h4 id="pageTitle">Dashboard</h4>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-icon">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c757d' width='20' height='20'%3E%3Cpath d='M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z'/%3E%3C/svg%3E" alt="Notifikasi">
+                        <span class="notification-badge"></span>
+                    </button>
+                    <button class="btn btn-primary" onclick="showPage('rentals')">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white' width='16' height='16'%3E%3Cpath d='M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z'/%3E%3C/svg%3E" style="margin-right: 6px;">
+                        Sewa Mobil
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dashboard Page -->
+            <div id="page-dashboard" class="fade-in">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-icon primary">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233498DB'%3E%3Cpath d='M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z'/%3E%3C/svg%3E" alt="Total Mobil">
+                            </div>
+                            <div class="stat-info">
+                                <h3>7</h3>
+                                <p>Total Mobil</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-icon success">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2327AE60'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E" alt="Tersedia">
+                            </div>
+                            <div class="stat-info">
+                                <h3>5</h3>
+                                <p>Tersedia</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-icon warning">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23F39C12'%3E%3Cpath d='M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11zM9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm-8 4H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z'/%3E%3C/svg%3E" alt="Sedang Disewa">
+                            </div>
+                            <div class="stat-info">
+                                <h3>2</h3>
+                                <p>Sedang Disewa</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-icon success">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2327AE60'%3E%3Cpath d='M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z'/%3E%3C/svg%3E" alt="Pendapatan">
+                            </div>
+                            <div class="stat-info">
+                                <h3>Rp 4,5M</h3>
+                                <p>Pendapatan</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Penyewaan Terbaru</h5>
+                                <button class="btn btn-outline btn-sm" onclick="showPage('rentals')">Lihat Semua</button>
+                            </div>
+                            <div class="card-body" style="padding: 0;">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Invoice</th>
+                                            <th>Pelanggan</th>
+                                            <th>Mobil</th>
+                                            <th>Tanggal</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>INV-20240115-0001</strong></td>
+                                            <td>
+                                                <div class="table-user">
+                                                    <div class="table-user-avatar">AF</div>
+                                                    <span>Ahmad Fauzi</span>
+                                                </div>
+                                            </td>
+                                            <td>Toyota Camry</td>
+                                            <td>15 Jan 2024</td>
+                                            <td><span class="badge-status badge-ongoing">Sedang Berlangsung</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>INV-20240115-0002</strong></td>
+                                            <td>
+                                                <div class="table-user">
+                                                    <div class="table-user-avatar">SN</div>
+                                                    <span>Siti Nurhaliza</span>
+                                                </div>
+                                            </td>
+                                            <td>Honda Civic</td>
+                                            <td>14 Jan 2024</td>
+                                            <td><span class="badge-status badge-ongoing">Sedang Berlangsung</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>INV-20240114-0001</strong></td>
+                                            <td>
+                                                <div class="table-user">
+                                                    <div class="table-user-avatar">BS</div>
+                                                    <span>Budi Santoso</span>
+                                                </div>
+                                            </td>
+                                            <td>Mitsubishi Pajero</td>
+                                            <td>12 Jan 2024</td>
+                                            <td><span class="badge-status badge-completed">Selesai</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Aksi Cepat</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="quick-actions">
+                                    <button class="quick-action-btn primary" onclick="showPage('rentals')">
+                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z'/%3E%3C/svg%3E" alt="Tambah">
+                                        Penyewaan Baru
+                                    </button>
+                                    <button class="quick-action-btn success" onclick="showPage('returns')">
+                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z'/%3E%3C/svg%3E" alt="Kembali">
+                                        Pengembalian
+                                    </button>
+                                    <button class="quick-action-btn outline" onclick="showPage('cars')">
+                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c757d'%3E%3Cpath d='M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z'/%3E%3C/svg%3E" alt="Mobil">
+                                        Tambah Mobil
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cars Page -->
+            <div id="page-cars" style="display: none;" class="fade-in">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 style="margin: 0; font-weight: 700; color: var(--primary);">Data Mobil</h5>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#carModal">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white' width='16' height='16'%3E%3Cpath d='M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z'/%3E%3C/svg%3E" style="margin-right: 6px;">
+                        Tambah Mobil
+                    </button>
+                </div>
+                <div class="row">
+                    <!-- Toyota Camry -->
+                    <div class="col-md-4">
+                        <div class="car-card">
+                            <div class="car-image" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);">
+                                <img src="imgs/red-toyota-camry-sedan-studio-shot.jpg" alt="Toyota Camry" style="width: 90%; height: auto; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4)); transition: 0.3s;">
+                                <span class="car-status badge-available">Tersedia</span>
+                            </div>
+                            <div class="car-info">
+                                <div class="car-title">Toyota Camry 2.5 V</div>
+                                <div class="car-plate">B 1234 ABC</div>
+                                <div class="car-specs">
+                                    <div class="spec-item">
+                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c757d'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/%3E%3C/svg%3E" alt="Kursi">
+                                        5 Kursi
+                                    </div>
+                                    <div class="spec-item">
+                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c757d'%3E%3Cpath d='M20.38 8.57l-1.23 1.85a8 8 0 0 1-.22 7.58H5.07A8 8 0 0 1 15.58 6.85l1.85-1.23A10 10 0 0 0 3.35 19a2 2 0 0 0 1.72 1h13.85a2 2 0 0 0 1.74-1 10 10 0 0 0-.27-10.44z'/%3E%3C/svg%3E" alt="Transmisi">
+                                        Automatic
+                                    </div>
+                                    <div class="spec-item">
+                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c757d'%3E%3Cpath d='M19.77 7.23l.01-.01-3.72-3.72L15 4.56l2.11 2.11c-.94.36-1.61 1.26-1.61 2.33 0 1.38 1.12 2.5 2.5 2.5.36 0 .69-.08 1-.21v7.21c0 .55-.45 1-1 1s-1-.45-1-1v-4h-4v4h-4v-4h-4v4H5v-4.21c.31-.13.59-.33.8-.62l1.81 1.81c-.26.52-.41 1.11-.41 1.76 0 1.76 1.43 3.19 3.19 3.19s3.19-1.43 3.19-3.19c0-.65-.15-1.24-.41-1.76l1.81-1.81.01.01c1.04 1.04 2.72 1.05 3.77 0 .52-.52.77-1.25.77-1.96 0-.7-.25-1.44-.77-1.96z'/%3E%3C/svg%3E" alt="Bensin">
+                                        Bensin
+                                    </div>
+                                </div>
+                                <div class="car-price">Rp 500.000 <span>/ hari</span></div>
+                                <div class="car-actions">
+                                    <button class="btn btn-outline btn-sm">Edit</button>
+                                    <button class="btn btn-primary btn-sm" onclick="showPage('rentals')">Sewa</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Toyota Fortuner -->
+                    <div class="col-md-4">
+                        <div class="car-card">
+                            <div class="car-image" style="background: linear-gradient(135deg, #2C3E50 0%, #3498DB 100%);">
+                                <img src="imgs/toyota-fortuner-legender-red-suv-studio-shot.jpg" alt="Toyota Fortuner" style="width: 90%; height: auto; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4)); transition: 0.3s;">
+                                <span class="car-status badge-available">Tersedia</span>
+                            </div>
+                            <div class="car-info">
+                                <div class="car-title">Toyota Fortuner GR Sport</div>
+                                <div class="car-plate">B 5678 DEF</div>
+                                <div class="car-specs">
+                                    <div class="spec-item">
+                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c757d'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/%3E%3C/svg%3E" alt="Kursi">
+                                        7 Kursi
+                                    </div>
+                                    <div class="spec-item">
+                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c757d'%3E%3Cpath d='M20.38 8.57l-1.23 1.85a8 8 0 0 1-.22 7.58H5.07A8 8 0 0 1 15.58 6.85l1.85-1.23A10 10 0 0 0 3.35 19a2 2 0 0 0 1.72 1h13.85a2 2 0 0 0 1.74-1 10 10 0 0 0-.27-10.44z'/%3E%3C/svg%3E" alt="Transmisi">
+                                        Automatic
+                                    </div>
+                                    <div class="spec-item">
+                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c757d'%3E%3Cpath d='M19.77 7.23l.01-.01-3.72-3.72L15 4.56l2.11 2.11c-.94.36-1.61 1.26-1.61 2.33 0 1.38 1.12 2.5 2.5 2.5.36 0 .69-.08 1-.21v7.21c0 .55-.45 1-1 1s-1-.45-1-1v-4h-4v4h-4v-4h-4v4H5v-4.21c.31-.13.59-.33.8-.62l1.81 1.81c-.26.52-.41 1.11-.41 1.76 0 1.76 1.43 3.19 3.19 3.19s3.19-1.43 3.19-3.19c0-.65-.15-1.24-.41-1.76l1.81-1.81.01.01c1.04 1.04 2.72 1.05 3.77 0 .52-.52.77-1.25.77-1.96 0-.7-.25-1.44-.77-1.96z'/%3E%3C/svg%3E" alt="Bensin">
+                                        Diesel
+                                    </div>
+                                </div>
+                                <div class="car-price">Rp 750.000 <span>/ hari</span></div>
+                                <div class="car-actions">
+                                    <button class="btn btn-outline btn-sm">Edit</button>
+                                    <button class="btn btn-primary btn-sm" onclick="showPage('rentals')">Sewa</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Honda Civic -->
+                    <div class="col-md-4">
+                        <div class="car-card">
+                            <div class="car-image" style="background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%);">
+                                <img src="imgs/black-honda-civic-sedan-studio-front-angle.jpg" alt="Honda Civic" style="width: 90%; height: auto; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4)); transition: 0.3s;">
+                                <span class="car-status badge-rented">Disewa</span>
+                            </div>
+                            <div class="car-info">
+                                <div class="car-title">Honda Civic Type R</div>
+                                <div class="car-plate">B 9012 GHI</div>
+                                <div class="car-specs">
+                                    <div class="spec-item">
+                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c757d'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/%3E%3C/svg%3E" alt="Kursi">
+                                        5 Kursi
+                                    </div>
+                                    <div class="spec-item">
+                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c757d'%3E%3Cpath d='M20.38 8.57l-1.23 1.85a8 8 0 0 1-.22 7.58H5.07A8 8 0 0 1 15.58 6.85l1.85-1.23A10 10 0 0 0 3.35 19a2 2 0 0 0 1.72 1h13.85a2 2 0 0 0 1.74-1 10 10 0 0 0-.27-10.44z'/%3E%3C/svg%3E" alt="Transmisi">
+                                        Manual
+                                    </div>
+                                    <div class="spec-item">
+                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c757d'%3E%3Cpath d='M19.77 7.23l.01-.01-3.72-3.72L15 4.56l2.11 2.11c-.94.36-1.61 1.26-1.61 2.33 0 1.38 1.12 2.5 2.5 2.5.36 0 .69-.08 1-.21v7.21c0 .55-.45 1-1 1s-1-.45-1-1v-4h-4v4h-4v-4h-4v4H5v-4.21c.31-.13.59-.33.8-.62l1.81 1.81c-.26.52-.41 1.11-.41 1.76 0 1.76 1.43 3.19 3.19 3.19s3.19-1.43 3.19-3.19c0-.65-.15-1.24-.41-1.76l1.81-1.81.01.01c1.04 1.04 2.72 1.05 3.77 0 .52-.52.77-1.25.77-1.96 0-.7-.25-1.44-.77-1.96z'/%3E%3C/svg%3E" alt="Bensin">
+                                        Bensin
+                                    </div>
+                                </div>
+                                <div class="car-price">Rp 450.000 <span>/ hari</span></div>
+                                <div class="car-actions">
+                                    <button class="btn btn-outline btn-sm">Edit</button>
+                                    <button class="btn btn-success btn-sm" onclick="showPage('returns')">Kembali</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Mitsubishi Pajero -->
+                    <div class="col-md-4">
+                        <div class="car-card">
+                            <div class="car-image" style="background: linear-gradient(135deg, #141E30 0%, #243B55 100%);">
+                                <img src="imgs/mitsubishi-pajero-sport-red-front-view.jpg" alt="Mitsubishi Pajero" style="width: 90%; height: auto; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4)); transition: 0.3s;">
+                                <span class="car-status badge-available">Tersedia</span>
+                            </div>
+                            <div class="car-info">
+                                <div class="car-title">Mitsubishi Pajero Sport</div>
+                                <div class="car-plate">B 3456 JKL</div>
+                                <div class="car-specs">
+                                    <div class="spec-item">
+                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c757d'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/%3E%3C/svg%3E" alt="Kursi">
+                                        7 Kursi
+                                    </div>
+                                    <div class="spec-item">
+                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c757d'%3E%3Cpath d='M20.38 8.57l-1.23 1.85a8 8 0 0 1-.22 7.58H5.07A8 8 0 0 1 15.58 6.85l1.85-1.23A10 10 0 0 0 3.35 19a2 2 0 0 0 1.72 1h13.85a2 2 0 0 0 1.74-1 10 10 0 0 0-.27-10.44z'/%3E%3C/svg%3E" alt="Transmisi">
+                                        Automatic
+                                    </div>
+                                    <div class="spec-item">
+                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c757d'%3E%3Cpath d='M19.77 7.23l.01-.01-3.72-3.72L15 4.56l2.11 2.11c-.94.36-1.61 1.26-1.61 2.33 0 1.38 1.12 2.5 2.5 2.5.36 0 .69-.08 1-.21v7.21c0 .55-.45 1-1 1s-1-.45-1-1v-4h-4v4h-4v-4h-4v4H5v-4.21c.31-.13.59-.33.8-.62l1.81 1.81c-.26.52-.41 1.11-.41 1.76 0 1.76 1.43 3.19 3.19 3.19s3.19-1.43 3.19-3.19c0-.65-.15-1.24-.41-1.76l1.81-1.81.01.01c1.04 1.04 2.72 1.05 3.77 0 .52-.52.77-1.25.77-1.96 0-.7-.25-1.44-.77-1.96z'/%3E%3C/svg%3E" alt="Bensin">
+                                        Diesel
+                                    </div>
+                                </div>
+                                <div class="car-price">Rp 850.000 <span>/ hari</span></div>
+                                <div class="car-actions">
+                                    <button class="btn btn-outline btn-sm">Edit</button>
+                                    <button class="btn btn-primary btn-sm" onclick="showPage('rentals')">Sewa</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Honda CRV -->
+                    <div class="col-md-4">
+                        <div class="car-card">
+                            <div class="car-image" style="background: linear-gradient(135deg, #2C3E50 0%, #E74C3C 100%);">
+                                <img src="imgs/red-honda-crv-suv-front-view.jpg" alt="Honda CRV" style="width: 90%; height: auto; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4)); transition: 0.3s;">
+                                <span class="car-status badge-rented">Disewa</span>
+                            </div>
+                            <div class="car-info">
+                                <div class="car-title">Honda CR-V 1.5 Turbo</div>
+                                <div class="car-plate">B 7890 MNO</div>
+                                <div class="car-specs">
+                                    <div class="spec-item">
+                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c757d'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/%3E%3C/svg%3E" alt="Kursi">
+                                        5 Kursi
+                                    </div>
+                                    <div class="spec-item">
+                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c757d'%3E%3Cpath d='M20.38 8.57l-1.23 1.85a8 8 0 0 1-.22 7.58H5.07A8 8 0 0 1 15.58 6.85l1.85-1.23A10 10 0 0 0 3.35 19a2 2 0 0 0 1.72 1h13.85a2 2 0 0 0 1.74-1 10 10 0 0 0-.27-10.44z'/%3E%3C/svg%3E" alt="Transmisi">
+                                        CVT
+                                    </div>
+                                    <div class="spec-item">
+                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c757d'%3E%3Cpath d='M19.77 7.23l.01-.01-3.72-3.72L15 4.56l2.11 2.11c-.94.36-1.61 1.26-1.61 2.33 0 1.38 1.12 2.5 2.5 2.5.36 0 .69-.08 1-.21v7.21c0 .55-.45 1-1 1s-1-.45-1-1v-4h-4v4h-4v-4h-4v4H5v-4.21c.31-.13.59-.33.8-.62l1.81 1.81c-.26.52-.41 1.11-.41 1.76 0 1.76 1.43 3.19 3.19 3.19s3.19-1.43 3.19-3.19c0-.65-.15-1.24-.41-1.76l1.81-1.81.01.01c1.04 1.04 2.72 1.05 3.77 0 .52-.52.77-1.25.77-1.96 0-.7-.25-1.44-.77-1.96z'/%3E%3C/svg%3E" alt="Bensin">
+                                        Bensin
+                                    </div>
+                                </div>
+                                <div class="car-price">Rp 600.000 <span>/ hari</span></div>
+                                <div class="car-actions">
+                                    <button class="btn btn-outline btn-sm">Edit</button>
+                                    <button class="btn btn-success btn-sm" onclick="showPage('returns')">Kembali</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Toyota Innova -->
+                    <div class="col-md-4">
+                        <div class="car-card">
+                            <div class="car-image" style="background: linear-gradient(135deg, #134E5E 0%, #71B280 100%);">
+                                <img src="imgs/toyota-camry-white-sedan-studio-shot.jpg" alt="Toyota Innova" style="width: 90%; height: auto; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4)); transition: 0.3s;">
+                                <span class="car-status badge-available">Tersedia</span>
+                            </div>
+                            <div class="car-info">
+                                <div class="car-title">Toyota Innova Crysta</div>
+                                <div class="car-plate">B 2345 PQR</div>
+                                <div class="car-specs">
+                                    <div class="spec-item">
+                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c757d'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/%3E%3C/svg%3E" alt="Kursi">
+                                        7 Kursi
+                                    </div>
+                                    <div class="spec-item">
+                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c757d'%3E%3Cpath d='M20.38 8.57l-1.23 1.85a8 8 0 0 1-.22 7.58H5.07A8 8 0 0 1 15.58 6.85l1.85-1.23A10 10 0 0 0 3.35 19a2 2 0 0 0 1.72 1h13.85a2 2 0 0 0 1.74-1 10 10 0 0 0-.27-10.44z'/%3E%3C/svg%3E" alt="Transmisi">
+                                        Automatic
+                                    </div>
+                                    <div class="spec-item">
+                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c757d'%3E%3Cpath d='M19.77 7.23l.01-.01-3.72-3.72L15 4.56l2.11 2.11c-.94.36-1.61 1.26-1.61 2.33 0 1.38 1.12 2.5 2.5 2.5.36 0 .69-.08 1-.21v7.21c0 .55-.45 1-1 1s-1-.45-1-1v-4h-4v4h-4v-4h-4v4H5v-4.21c.31-.13.59-.33.8-.62l1.81 1.81c-.26.52-.41 1.11-.41 1.76 0 1.76 1.43 3.19 3.19 3.19s3.19-1.43 3.19-3.19c0-.65-.15-1.24-.41-1.76l1.81-1.81.01.01c1.04 1.04 2.72 1.05 3.77 0 .52-.52.77-1.25.77-1.96 0-.7-.25-1.44-.77-1.96z'/%3E%3C/svg%3E" alt="Bensin">
+                                        Diesel
+                                    </div>
+                                </div>
+                                <div class="car-price">Rp 550.000 <span>/ hari</span></div>
+                                <div class="car-actions">
+                                    <button class="btn btn-outline btn-sm">Edit</button>
+                                    <button class="btn btn-primary btn-sm" onclick="showPage('rentals')">Sewa</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customers Page -->
+            <div id="page-customers" style="display: none;" class="fade-in">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 style="margin: 0; font-weight: 700; color: var(--primary);">Data Pelanggan</h5>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#customerModal">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white' width='16' height='16'%3E%3Cpath d='M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z'/%3E%3C/svg%3E" style="margin-right: 6px;">
+                        Tambah Pelanggan
+                    </button>
+                </div>
+                <div class="card">
+                    <div class="card-body" style="padding: 0;">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Kode</th>
+                                    <th>Nama</th>
+                                    <th>NIK</th>
+                                    <th>Telepon</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>CST001</strong></td>
+                                    <td>
+                                        <div class="table-user">
+                                            <div class="table-user-avatar">AF</div>
+                                            <span>Ahmad Fauzi</span>
+                                        </div>
+                                    </td>
+                                    <td>3175010101010001</td>
+                                    <td>081234567890</td>
+                                    <td><span class="badge-status badge-active">Aktif</span></td>
+                                    <td>
+                                        <button class="btn btn-outline btn-sm">Edit</button>
+                                        <button class="btn btn-primary btn-sm" onclick="showPage('rentals')">Sewa</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>CST002</strong></td>
+                                    <td>
+                                        <div class="table-user">
+                                            <div class="table-user-avatar">SN</div>
+                                            <span>Siti Nurhaliza</span>
+                                        </div>
+                                    </td>
+                                    <td>3175010202020002</td>
+                                    <td>081234567891</td>
+                                    <td><span class="badge-status badge-active">Aktif</span></td>
+                                    <td>
+                                        <button class="btn btn-outline btn-sm">Edit</button>
+                                        <button class="btn btn-primary btn-sm" onclick="showPage('rentals')">Sewa</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>CST003</strong></td>
+                                    <td>
+                                        <div class="table-user">
+                                            <div class="table-user-avatar">BS</div>
+                                            <span>Budi Santoso</span>
+                                        </div>
+                                    </td>
+                                    <td>3175010303030003</td>
+                                    <td>081234567892</td>
+                                    <td><span class="badge-status badge-active">Aktif</span></td>
+                                    <td>
+                                        <button class="btn btn-outline btn-sm">Edit</button>
+                                        <button class="btn btn-primary btn-sm" onclick="showPage('rentals')">Sewa</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>CST004</strong></td>
+                                    <td>
+                                        <div class="table-user">
+                                            <div class="table-user-avatar">DW</div>
+                                            <span>Dewi Sartika</span>
+                                        </div>
+                                    </td>
+                                    <td>3175010404040004</td>
+                                    <td>081234567893</td>
+                                    <td><span class="badge-status badge-active">Aktif</span></td>
+                                    <td>
+                                        <button class="btn btn-outline btn-sm">Edit</button>
+                                        <button class="btn btn-primary btn-sm" onclick="showPage('rentals')">Sewa</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>CST005</strong></td>
+                                    <td>
+                                        <div class="table-user">
+                                            <div class="table-user-avatar">EK</div>
+                                            <span>Eko Prasetyo</span>
+                                        </div>
+                                    </td>
+                                    <td>3175010505050005</td>
+                                    <td>081234567894</td>
+                                    <td><span class="badge-status badge-active">Aktif</span></td>
+                                    <td>
+                                        <button class="btn btn-outline btn-sm">Edit</button>
+                                        <button class="btn btn-primary btn-sm" onclick="showPage('rentals')">Sewa</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>CST006</strong></td>
+                                    <td>
+                                        <div class="table-user">
+                                            <div class="table-user-avatar">FA</div>
+                                            <span>Fajar Abdullah</span>
+                                        </div>
+                                    </td>
+                                    <td>3175010606060006</td>
+                                    <td>081234567895</td>
+                                    <td><span class="badge-status badge-active">Aktif</span></td>
+                                    <td>
+                                        <button class="btn btn-outline btn-sm">Edit</button>
+                                        <button class="btn btn-primary btn-sm" onclick="showPage('rentals')">Sewa</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>CST007</strong></td>
+                                    <td>
+                                        <div class="table-user">
+                                            <div class="table-user-avatar">GT</div>
+                                            <span>Gita Amelia</span>
+                                        </div>
+                                    </td>
+                                    <td>3175010707070007</td>
+                                    <td>081234567896</td>
+                                    <td><span class="badge-status badge-active">Aktif</span></td>
+                                    <td>
+                                        <button class="btn btn-outline btn-sm">Edit</button>
+                                        <button class="btn btn-primary btn-sm" onclick="showPage('rentals')">Sewa</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>CST008</strong></td>
+                                    <td>
+                                        <div class="table-user">
+                                            <div class="table-user-avatar">HR</div>
+                                            <span>Hendra Wijaya</span>
+                                        </div>
+                                    </td>
+                                    <td>3175010808080008</td>
+                                    <td>081234567897</td>
+                                    <td><span class="badge-status badge-active">Aktif</span></td>
+                                    <td>
+                                        <button class="btn btn-outline btn-sm">Edit</button>
+                                        <button class="btn btn-primary btn-sm" onclick="showPage('rentals')">Sewa</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>CST009</strong></td>
+                                    <td>
+                                        <div class="table-user">
+                                            <div class="table-user-avatar">IN</div>
+                                            <span>Indah Permata</span>
+                                        </div>
+                                    </td>
+                                    <td>3175010909090009</td>
+                                    <td>081234567898</td>
+                                    <td><span class="badge-status badge-active">Aktif</span></td>
+                                    <td>
+                                        <button class="btn btn-outline btn-sm">Edit</button>
+                                        <button class="btn btn-primary btn-sm" onclick="showPage('rentals')">Sewa</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>CST010</strong></td>
+                                    <td>
+                                        <div class="table-user">
+                                            <div class="table-user-avatar">JP</div>
+                                            <span>Joko Putro</span>
+                                        </div>
+                                    </td>
+                                    <td>3175011010100010</td>
+                                    <td>081234567899</td>
+                                    <td><span class="badge-status badge-active">Aktif</span></td>
+                                    <td>
+                                        <button class="btn btn-outline btn-sm">Edit</button>
+                                        <button class="btn btn-primary btn-sm" onclick="showPage('rentals')">Sewa</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>CST011</strong></td>
+                                    <td>
+                                        <div class="table-user">
+                                            <div class="table-user-avatar">KR</div>
+                                            <span>Kartika Sari</span>
+                                        </div>
+                                    </td>
+                                    <td>3175011111110011</td>
+                                    <td>081234567800</td>
+                                    <td><span class="badge-status badge-active">Aktif</span></td>
+                                    <td>
+                                        <button class="btn btn-outline btn-sm">Edit</button>
+                                        <button class="btn btn-primary btn-sm" onclick="showPage('rentals')">Sewa</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>CST012</strong></td>
+                                    <td>
+                                        <div class="table-user">
+                                            <div class="table-user-avatar">LM</div>
+                                            <span>Lukman Hakim</span>
+                                        </div>
+                                    </td>
+                                    <td>3175011212120012</td>
+                                    <td>081234567801</td>
+                                    <td><span class="badge-status badge-active">Aktif</span></td>
+                                    <td>
+                                        <button class="btn btn-outline btn-sm">Edit</button>
+                                        <button class="btn btn-primary btn-sm" onclick="showPage('rentals')">Sewa</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rentals Page -->
+            <div id="page-rentals" style="display: none;" class="fade-in">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 style="margin: 0; font-weight: 700; color: var(--primary);">Data Penyewaan</h5>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#rentalModal">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white' width='16' height='16'%3E%3Cpath d='M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z'/%3E%3C/svg%3E" style="margin-right: 6px;">
+                        Penyewaan Baru
+                    </button>
+                </div>
+                <div class="card">
+                    <div class="card-body" style="padding: 0;">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Invoice</th>
+                                    <th>Pelanggan</th>
+                                    <th>Mobil</th>
+                                    <th>Tanggal</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>INV-20240115-0001</strong></td>
+                                    <td>Ahmad Fauzi</td>
+                                    <td>Toyota Camry 2.5 V</td>
+                                    <td>15 Jan - 22 Jan</td>
+                                    <td><strong>Rp 3.500.000</strong></td>
+                                    <td><span class="badge-status badge-ongoing">Sedang Berlangsung</span></td>
+                                    <td>
+                                        <button class="btn btn-outline btn-sm">Detail</button>
+                                        <button class="btn btn-success btn-sm" onclick="showPage('returns')">Kembali</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>INV-20240115-0002</strong></td>
+                                    <td>Siti Nurhaliza</td>
+                                    <td>Honda Civic Type R</td>
+                                    <td>14 Jan - 21 Jan</td>
+                                    <td><strong>Rp 3.150.000</strong></td>
+                                    <td><span class="badge-status badge-ongoing">Sedang Berlangsung</span></td>
+                                    <td>
+                                        <button class="btn btn-outline btn-sm">Detail</button>
+                                        <button class="btn btn-success btn-sm" onclick="showPage('returns')">Kembali</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>INV-20240114-0001</strong></td>
+                                    <td>Budi Santoso</td>
+                                    <td>Mitsubishi Pajero Sport</td>
+                                    <td>12 Jan - 15 Jan</td>
+                                    <td><strong>Rp 2.550.000</strong></td>
+                                    <td><span class="badge-status badge-completed">Selesai</span></td>
+                                    <td>
+                                        <button class="btn btn-outline btn-sm">Detail</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>INV-20240113-0001</strong></td>
+                                    <td>Dewi Sartika</td>
+                                    <td>Toyota Fortuner GR Sport</td>
+                                    <td>10 Jan - 13 Jan</td>
+                                    <td><strong>Rp 2.250.000</strong></td>
+                                    <td><span class="badge-status badge-completed">Selesai</span></td>
+                                    <td>
+                                        <button class="btn btn-outline btn-sm">Detail</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>INV-20240112-0001</strong></td>
+                                    <td>Eko Prasetyo</td>
+                                    <td>Honda CR-V 1.5 Turbo</td>
+                                    <td>08 Jan - 12 Jan</td>
+                                    <td><strong>Rp 2.400.000</strong></td>
+                                    <td><span class="badge-status badge-completed">Selesai</span></td>
+                                    <td>
+                                        <button class="btn btn-outline btn-sm">Detail</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>INV-20240111-0001</strong></td>
+                                    <td>Fajar Abdullah</td>
+                                    <td>Toyota Innova Crysta</td>
+                                    <td>07 Jan - 11 Jan</td>
+                                    <td><strong>Rp 2.200.000</strong></td>
+                                    <td><span class="badge-status badge-completed">Selesai</span></td>
+                                    <td>
+                                        <button class="btn btn-outline btn-sm">Detail</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>INV-20240110-0001</strong></td>
+                                    <td>Gita Amelia</td>
+                                    <td>Toyota Camry 2.5 V</td>
+                                    <td>05 Jan - 10 Jan</td>
+                                    <td><strong>Rp 2.500.000</strong></td>
+                                    <td><span class="badge-status badge-completed">Selesai</span></td>
+                                    <td>
+                                        <button class="btn btn-outline btn-sm">Detail</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>INV-20240109-0001</strong></td>
+                                    <td>Hendra Wijaya</td>
+                                    <td>Toyota Fortuner GR Sport</td>
+                                    <td>04 Jan - 09 Jan</td>
+                                    <td><strong>Rp 3.750.000</strong></td>
+                                    <td><span class="badge-status badge-completed">Selesai</span></td>
+                                    <td>
+                                        <button class="btn btn-outline btn-sm">Detail</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>INV-20240108-0001</strong></td>
+                                    <td>Indah Permata</td>
+                                    <td>Mitsubishi Pajero Sport</td>
+                                    <td>03 Jan - 08 Jan</td>
+                                    <td><strong>Rp 4.250.000</strong></td>
+                                    <td><span class="badge-status badge-completed">Selesai</span></td>
+                                    <td>
+                                        <button class="btn btn-outline btn-sm">Detail</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>INV-20240107-0001</strong></td>
+                                    <td>Joko Putro</td>
+                                    <td>Honda Civic Type R</td>
+                                    <td>02 Jan - 07 Jan</td>
+                                    <td><strong>Rp 2.250.000</strong></td>
+                                    <td><span class="badge-status badge-completed">Selesai</span></td>
+                                    <td>
+                                        <button class="btn btn-outline btn-sm">Detail</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>INV-20240106-0001</strong></td>
+                                    <td>Kartika Sari</td>
+                                    <td>Toyota Innova Crysta</td>
+                                    <td>01 Jan - 06 Jan</td>
+                                    <td><strong>Rp 2.750.000</strong></td>
+                                    <td><span class="badge-status badge-completed">Selesai</span></td>
+                                    <td>
+                                        <button class="btn btn-outline btn-sm">Detail</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>INV-20240105-0001</strong></td>
+                                    <td>Lukman Hakim</td>
+                                    <td>Honda CR-V 1.5 Turbo</td>
+                                    <td>30 Des - 05 Jan</td>
+                                    <td><strong>Rp 3.600.000</strong></td>
+                                    <td><span class="badge-status badge-completed">Selesai</span></td>
+                                    <td>
+                                        <button class="btn btn-outline btn-sm">Detail</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Returns Page -->
+            <div id="page-returns" style="display: none;" class="fade-in">
+                <h5 style="margin: 0 0 20px 0; font-weight: 700; color: var(--primary);">Pengembalian Mobil</h5>
+                <div class="card">
+                    <div class="card-body" style="padding: 0;">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Invoice</th>
+                                    <th>Pelanggan</th>
+                                    <th>Mobil</th>
+                                    <th>Tanggal Kembali</th>
+                                    <th>Denda</th>
+                                    <th>Pengembalian</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>INV-20240114-0001</strong></td>
+                                    <td>Budi Santoso</td>
+                                    <td>Mitsubishi Pajero</td>
+                                    <td>15 Jan 2024</td>
+                                    <td>Rp 0</td>
+                                    <td><strong style="color: var(--success);">Rp 800.000</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transactions Page -->
+            <div id="page-transactions" style="display: none;" class="fade-in">
+                <h5 style="margin: 0 0 20px 0; font-weight: 700; color: var(--primary);">Transaksi Keuangan</h5>
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <div class="stat-icon success">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2327AE60'%3E%3Cpath d='M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z'/%3E%3C/svg%3E" alt="Pendapatan">
+                            </div>
+                            <div class="stat-info">
+                                <h3>Rp 4,5M</h3>
+                                <p>Total Pendapatan</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <div class="stat-icon primary">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233498DB'%3E%3Cpath d='M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11zM9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm-8 4H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z'/%3E%3C/svg%3E" alt="Bulan Ini">
+                            </div>
+                            <div class="stat-info">
+                                <h3>Rp 1,2M</h3>
+                                <p>Bulan Ini</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <div class="stat-icon purple">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239B59B6'%3E%3Cpath d='M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z'/%3E%3C/svg%3E" alt="Total Transaksi">
+                            </div>
+                            <div class="stat-info">
+                                <h3>12</h3>
+                                <p>Total Transaksi</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body" style="padding: 0;">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>No. Transaksi</th>
+                                    <th>Tanggal</th>
+                                    <th>Jenis</th>
+                                    <th>Jumlah</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>TRX-20240115-0001</strong></td>
+                                    <td>15 Jan 2024 10:30</td>
+                                    <td><span class="badge-status badge-active">Pembayaran</span></td>
+                                    <td><strong style="color: var(--success);">+ Rp 500.000</strong></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>TRX-20240115-0002</strong></td>
+                                    <td>15 Jan 2024 09:15</td>
+                                    <td><span class="badge-status badge-active">Deposit</span></td>
+                                    <td><strong style="color: var(--success);">+ Rp 200.000</strong></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>TRX-20240114-0001</strong></td>
+                                    <td>14 Jan 2024 14:00</td>
+                                    <td><span class="badge-status badge-ongoing">Pengembalian</span></td>
+                                    <td><strong style="color: var(--danger);">- Rp 100.000</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Car Modal -->
+    <div class="modal fade" id="carModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Tambah Mobil Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Merek</label>
+                        <select class="form-control form-select">
+                            <option>Toyota</option>
+                            <option>Honda</option>
+                            <option>Mitsubishi</option>
+                            <option>Suzuki</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Model</label>
+                        <input type="text" class="form-control" placeholder="Contoh: Camry, Civic">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Nomor Polisi</label>
+                        <input type="text" class="form-control" placeholder="B 1234 ABC">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Harga per Hari</label>
+                        <input type="number" class="form-control" placeholder="500000">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Modal -->
+    <div class="modal fade" id="customerModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Tambah Pelanggan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">NIK / KTP</label>
+                        <input type="text" class="form-control" placeholder="3175010101010001">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Nama Lengkap</label>
+                        <input type="text" class="form-control" placeholder="Ahmad Fauzi">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Telepon</label>
+                        <input type="text" class="form-control" placeholder="081234567890">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rental Modal -->
+    <div class="modal fade" id="rentalModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Penyewaan Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Pelanggan</label>
+                        <select class="form-control form-select">
+                            <option>Ahmad Fauzi</option>
+                            <option>Siti Nurhaliza</option>
+                            <option>Budi Santoso</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Mobil</label>
+                        <select class="form-control form-select">
+                            <option>Toyota Camry - B 1234 ABC (Rp 500.000/hari)</option>
+                            <option>Toyota Fortuner - B 5678 DEF (Rp 750.000/hari)</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label class="form-label">Tanggal Sewa</label>
+                                <input type="date" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label class="form-label">Tanggal Kembali</label>
+                                <input type="date" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-light rounded">
+                        <strong>Estimasi Total:</strong>
+                        <div style="font-size: 24px; font-weight: bold; color: #3498DB;">Rp 3.500.000</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Buat Penyewaan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Supabase JS -->
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+<!-- CryptoJS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
+<!-- App Script -->
+<script src="supabase-script.js?v=4"></script>
+
+
+</body>
+</html>
