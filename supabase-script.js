@@ -63,6 +63,25 @@ function setupEventListeners() {
         imageInput.addEventListener('change', handleImagePreview);
     }
     
+    // Save Car button
+    const saveCarBtn = document.getElementById('saveCarBtn');
+    if (saveCarBtn) {
+        saveCarBtn.addEventListener('click', saveCar);
+    }
+    
+    // Save Customer button
+    const saveCustomerBtn = document.getElementById('saveCustomerBtn');
+    if (saveCustomerBtn) {
+        saveCustomerBtn.addEventListener('click', saveCustomer);
+    }
+    
+    // Save Rental button
+    const saveRentalBtn = document.getElementById('saveRentalBtn');
+    if (saveRentalBtn) {
+        saveRentalBtn.addEventListener('click', saveRental);
+    }
+    
+    // Expose functions to global scope
     window.showPage = showPage;
     window.logout = logout;
     window.startEditCustomer = startEditCustomer;
@@ -262,11 +281,21 @@ function handleImagePreview(event) {
 // ============================================
 async function uploadCarImage(file, carId) {
     try {
+        // Validate file size (max 2MB)
+        if (file.size > 2 * 1024 * 1024) {
+            throw new Error('Ukuran file terlalu besar! Maksimal 2MB');
+        }
+        
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            throw new Error('File harus berupa gambar!');
+        }
+        
         const fileExt = file.name.split('.').pop();
         const fileName = `${carId}_${Date.now()}.${fileExt}`;
         const filePath = `car-images/${fileName}`;
         
-        console.log('📤 Uploading image:', filePath);
+        console.log('📤 Uploading to:', filePath);
         
         const { data: uploadData, error: uploadError } = await supabase.storage
             .from('mobil-images')
@@ -284,7 +313,7 @@ async function uploadCarImage(file, carId) {
             .from('mobil-images')
             .getPublicUrl(filePath);
         
-        console.log('✅ Image uploaded:', publicData.publicUrl);
+        console.log('✅ Image URL:', publicData.publicUrl);
         return publicData.publicUrl;
         
     } catch (err) {
@@ -396,14 +425,12 @@ async function startEditCustomer(id) {
         }
         
         const modal = document.getElementById('customerModal');
-        const inputs = modal.querySelectorAll('input');
-        
         modal.dataset.editId = data.id;
         modal.querySelector('.modal-title').textContent = 'Edit Pelanggan';
         
-        if (inputs[0]) inputs[0].value = data.nik;
-        if (inputs[1]) inputs[1].value = data.nama;
-        if (inputs[2]) inputs[2].value = data.telepon;
+        document.getElementById('customerNIK').value = data.nik;
+        document.getElementById('customerNama').value = data.nama;
+        document.getElementById('customerTelepon').value = data.telepon;
         
         const bsModal = new bootstrap.Modal(modal);
         bsModal.show();
@@ -416,12 +443,11 @@ async function startEditCustomer(id) {
 async function saveCustomer() {
     try {
         const modal = document.getElementById('customerModal');
-        const inputs = modal.querySelectorAll('input');
-        
-        const nik = inputs[0]?.value.trim();
-        const nama = inputs[1]?.value.trim();
-        const telepon = inputs[2]?.value.trim();
         const editId = modal.dataset.editId;
+        
+        const nik = document.getElementById('customerNIK')?.value.trim();
+        const nama = document.getElementById('customerNama')?.value.trim();
+        const telepon = document.getElementById('customerTelepon')?.value.trim();
         
         if (!nik || !nama || !telepon) {
             alert('Lengkapi semua data pelanggan!');
@@ -459,9 +485,14 @@ async function saveCustomer() {
             if (error) throw error;
         }
         
-        bootstrap.Modal.getInstance(modal).hide();
+        const bsModal = bootstrap.Modal.getInstance(modal);
+        if (bsModal) bsModal.hide();
+        
         delete modal.dataset.editId;
+        document.getElementById('customerForm').reset();
+        
         await loadCustomers();
+        alert('✅ Pelanggan berhasil disimpan!');
         
         console.log('✅ Customer saved');
     } catch (err) {
@@ -485,52 +516,40 @@ async function loadCars() {
         const container = document.querySelector('#page-cars .row');
         if (!container) return;
         
-        const dynamicSection = document.createElement('div');
-        dynamicSection.className = 'col-12';
-        dynamicSection.innerHTML = `
-            <div class="row">
-                ${(data || []).map(m => `
-                    <div class="col-md-4">
-                        <div class="car-card">
-                            <div class="car-image" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)">
-                                ${m.image_url 
-                                    ? `<img src="${m.image_url}" alt="${m.nama}" style="width: 90%; height: auto; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4));">`
-                                    : `<div style="padding: 60px; text-align: center; color: #fff; opacity: 0.5;">📷 No Image</div>`
-                                }
-                                <span class="car-status ${m.status === 'tersedia' ? 'badge-available' : 'badge-rented'}">
-                                    ${m.status === 'tersedia' ? 'Tersedia' : 'Disewa'}
-                                </span>
-                            </div>
-                            <div class="car-info">
-                                <div class="car-title">${m.nama}</div>
-                                <div class="car-plat">${m.plat_nomor}</div>
-                                <div class="car-specs">
-                                    <div class="spec-item">${m.kursi} Kursi</div>
-                                    <div class="spec-item">${m.transmisi}</div>
-                                    <div class="spec-item">${m.bahanbakar}</div>
-                                </div>
-                            </div>
-                            <div class="car-price">
-                                ${formatCurrency(m.hargaperhari)} <span>/hari</span>
-                            </div>
-                            <div class="car-actions">
-                                <button class="btn btn-outline btn-sm" onclick="startEditCar('${m.id}')">Edit</button>
-                                ${m.status === 'tersedia' 
-                                    ? `<button class="btn btn-primary btn-sm" onclick="showPage('rentals')">Sewa</button>`
-                                    : `<button class="btn btn-success btn-sm" onclick="showPage('returns')">Kembali</button>`
-                                }
-                            </div>
+        container.innerHTML = (data || []).map(m => `
+            <div class="col-md-4">
+                <div class="car-card">
+                    <div class="car-image" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)">
+                        ${m.image_url 
+                            ? `<img src="${m.image_url}" alt="${m.nama}" style="width: 90%; height: auto; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4));">`
+                            : `<div style="padding: 60px; text-align: center; color: #fff; opacity: 0.5;">📷 No Image</div>`
+                        }
+                        <span class="car-status ${m.status === 'tersedia' ? 'badge-available' : 'badge-rented'}">
+                            ${m.status === 'tersedia' ? 'Tersedia' : 'Disewa'}
+                        </span>
+                    </div>
+                    <div class="car-info">
+                        <div class="car-title">${m.nama}</div>
+                        <div class="car-plate">${m.plat_nomor}</div>
+                        <div class="car-specs">
+                            <div class="spec-item">${m.kursi} Kursi</div>
+                            <div class="spec-item">${m.transmisi}</div>
+                            <div class="spec-item">${m.bahanbakar}</div>
                         </div>
                     </div>
-                `).join('')}
+                    <div class="car-price">
+                        ${formatCurrency(m.hargaperhari)} <span>/hari</span>
+                    </div>
+                    <div class="car-actions">
+                        <button class="btn btn-outline btn-sm" onclick="startEditCar('${m.id}')">Edit</button>
+                        ${m.status === 'tersedia' 
+                            ? `<button class="btn btn-primary btn-sm" onclick="showPage('rentals')">Sewa</button>`
+                            : `<button class="btn btn-success btn-sm" onclick="showPage('returns')">Kembali</button>`
+                        }
+                    </div>
+                </div>
             </div>
-        `;
-        
-        const oldDynamic = container.querySelector('[data-dynamic="true"]');
-        if (oldDynamic) oldDynamic.remove();
-        
-        dynamicSection.dataset.dynamic = 'true';
-        container.appendChild(dynamicSection);
+        `).join('');
         
         console.log('✅ Cars loaded:', data.length);
     } catch (err) {
@@ -555,10 +574,18 @@ async function startEditCar(id) {
         modal.dataset.editId = data.id;
         modal.querySelector('.modal-title').textContent = 'Edit Mobil';
         
-        const inputs = modal.querySelectorAll('input');
-        if (inputs[0]) inputs[0].value = data.nama;
-        if (inputs[1]) inputs[1].value = data.plat_nomor;
-        if (inputs[2]) inputs[2].value = data.hargaperhari;
+        // Split nama jadi merek dan model
+        const namaParts = data.nama.split(' ');
+        const merek = namaParts[0];
+        const model = namaParts.slice(1).join(' ');
+        
+        document.getElementById('carMerek').value = merek;
+        document.getElementById('carModel').value = model;
+        document.getElementById('carPlat').value = data.plat_nomor;
+        document.getElementById('carKursi').value = data.kursi;
+        document.getElementById('carTransmisi').value = data.transmisi;
+        document.getElementById('carBahanBakar').value = data.bahanbakar;
+        document.getElementById('carHarga').value = data.hargaperhari;
         
         // Show current image if exists
         const preview = document.getElementById('imagePreview');
@@ -579,86 +606,108 @@ async function startEditCar(id) {
 async function saveCar() {
     try {
         const modal = document.getElementById('carModal');
-        const selects = modal.querySelectorAll('select');
-        const inputs = modal.querySelectorAll('input');
         const editId = modal.dataset.editId;
         
-        const merek = selects[0]?.value;
-        const model = inputs[0]?.value.trim();
-        const plat = inputs[1]?.value.trim();
-        const harga = parseInt(inputs[2]?.value, 10);
+        // Get all values
+        const merek = document.getElementById('carMerek')?.value || '';
+        const model = document.getElementById('carModel')?.value.trim();
+        const plat = document.getElementById('carPlat')?.value.trim();
+        const kursi = parseInt(document.getElementById('carKursi')?.value, 10) || 5;
+        const transmisi = document.getElementById('carTransmisi')?.value || 'Automatic';
+        const bahanbakar = document.getElementById('carBahanBakar')?.value || 'Bensin';
+        const harga = parseInt(document.getElementById('carHarga')?.value, 10);
         const imageFile = document.getElementById('carImageInput')?.files[0];
         
+        console.log('📝 Form data:', { merek, model, plat, kursi, transmisi, bahanbakar, harga });
+        
+        // Validation
         if (!model || !plat || !harga) {
-            alert('Lengkapi semua data mobil!');
+            alert('❌ Lengkapi data: Model, Plat Nomor, dan Harga wajib diisi!');
             return;
         }
         
+        if (harga < 50000) {
+            alert('❌ Harga minimal Rp 50.000!');
+            return;
+        }
+        
+        // Prepare payload
+        const nama = merek ? `${merek} ${model}` : model;
         const payload = {
-            nama: merek ? `${merek} ${model}` : model,
-            plat_nomor: plat,
-            kursi: 5,
-            transmisi: 'Automatic',
-            bahanbakar: 'Bensin',
-            hargaperhari: harga,
-            status: editId ? undefined : 'tersedia'
+            nama: nama,
+            plat_nomor: plat.toUpperCase(),
+            kursi: kursi,
+            transmisi: transmisi,
+            bahanbakar: bahanbakar,
+            hargaperhari: harga
         };
+        
+        console.log('💾 Payload:', payload);
         
         let carId = editId;
         
-        // Insert or update car data first
+        // Insert or Update
         if (editId) {
+            console.log('🔄 Updating car:', editId);
             const { error } = await supabase
                 .from('mobil')
                 .update(payload)
                 .eq('id', editId);
             
             if (error) throw error;
+            console.log('✅ Car updated');
         } else {
+            console.log('➕ Inserting new car');
             const { data: newCar, error } = await supabase
                 .from('mobil')
-                .insert({...payload, status: 'tersedia'})
+                .insert({
+                    ...payload,
+                    status: 'tersedia'
+                })
                 .select()
                 .single();
             
             if (error) throw error;
             carId = newCar.id;
+            console.log('✅ Car inserted:', carId);
         }
         
         // Upload image if provided
         if (imageFile && carId) {
-            const imageUrl = await uploadCarImage(imageFile, carId);
-            
-            // Update car with image URL
-            await supabase
-                .from('mobil')
-                .update({ image_url: imageUrl })
-                .eq('id', carId);
-            
-            // Save to gambar_mobil table
-            await supabase
-                .from('gambar_mobil')
-                .insert({
-                    mobilid: carId,
-                    url: imageUrl,
-                    is_primary: true
-                });
+            try {
+                console.log('📤 Uploading image...');
+                const imageUrl = await uploadCarImage(imageFile, carId);
+                console.log('✅ Image uploaded:', imageUrl);
+                
+                // Update car with image URL
+                await supabase
+                    .from('mobil')
+                    .update({ image_url: imageUrl })
+                    .eq('id', carId);
+                
+            } catch (imgErr) {
+                console.error('⚠️ Image upload failed:', imgErr);
+                alert('⚠️ Mobil tersimpan, tapi gagal upload gambar: ' + imgErr.message);
+            }
         }
         
-        bootstrap.Modal.getInstance(modal).hide();
-        delete modal.dataset.editId;
+        // Close modal and refresh
+        const bsModal = bootstrap.Modal.getInstance(modal);
+        if (bsModal) bsModal.hide();
         
-        // Reset form
-        modal.querySelectorAll('input').forEach(input => input.value = '');
+        delete modal.dataset.editId;
+        document.getElementById('carForm').reset();
         document.getElementById('imagePreviewContainer').style.display = 'none';
         
         await loadCars();
         await loadDashboard();
         
-        console.log('✅ Car saved with image');
+        alert('✅ Mobil berhasil disimpan!');
+        console.log('✅ Save car completed');
+        
     } catch (err) {
         console.error('❌ Save car error:', err);
-        alert('Gagal simpan mobil: ' + err.message);
+        alert('❌ Gagal simpan mobil: ' + err.message);
     }
 }
 
@@ -722,18 +771,21 @@ async function startCreateRental() {
         ]);
         
         const modal = document.getElementById('rentalModal');
-        const selects = modal.querySelectorAll('select');
+        const customerSelect = document.getElementById('rentalCustomer');
+        const carSelect = document.getElementById('rentalCar');
         
-        if (selects[0]) {
-            selects[0].innerHTML = (custRes.data || []).map(c => 
-                `<option value="${c.id}">${c.nama}</option>`
-            ).join('');
+        if (customerSelect) {
+            customerSelect.innerHTML = '<option value="">Pilih Pelanggan</option>' + 
+                (custRes.data || []).map(c => 
+                    `<option value="${c.id}">${c.nama}</option>`
+                ).join('');
         }
         
-        if (selects[1]) {
-            selects[1].innerHTML = (carRes.data || []).map(c => 
-                `<option value="${c.id}" data-harga="${c.hargaperhari}">${c.nama} - ${formatCurrency(c.hargaperhari)}/hari</option>`
-            ).join('');
+        if (carSelect) {
+            carSelect.innerHTML = '<option value="">Pilih Mobil</option>' +
+                (carRes.data || []).map(c => 
+                    `<option value="${c.id}" data-harga="${c.hargaperhari}">${c.nama} - ${formatCurrency(c.hargaperhari)}/hari</option>`
+                ).join('');
         }
         
         const bsModal = new bootstrap.Modal(modal);
@@ -746,13 +798,11 @@ async function startCreateRental() {
 async function saveRental() {
     try {
         const modal = document.getElementById('rentalModal');
-        const selects = modal.querySelectorAll('select');
-        const inputs = modal.querySelectorAll('input[type="date"]');
         
-        const pelangganId = selects[0]?.value;
-        const mobilId = selects[1]?.value;
-        const tanggalSewa = inputs[0]?.value;
-        const tanggalKembali = inputs[1]?.value;
+        const pelangganId = document.getElementById('rentalCustomer')?.value;
+        const mobilId = document.getElementById('rentalCar')?.value;
+        const tanggalSewa = document.getElementById('rentalStartDate')?.value;
+        const tanggalKembali = document.getElementById('rentalEndDate')?.value;
         
         if (!pelangganId || !mobilId || !tanggalSewa || !tanggalKembali) {
             alert('Lengkapi semua data penyewaan!');
@@ -760,7 +810,8 @@ async function saveRental() {
         }
         
         const days = Math.max(1, Math.ceil((new Date(tanggalKembali) - new Date(tanggalSewa)) / (1000*60*60*24)));
-        const harga = parseInt(selects[1].selectedOptions[0].dataset.harga, 10);
+        const carSelect = document.getElementById('rentalCar');
+        const harga = parseInt(carSelect.selectedOptions[0].dataset.harga, 10);
         const total = days * harga;
         
         const now = new Date();
@@ -796,11 +847,16 @@ async function saveRental() {
             .update({ status: 'disewa' })
             .eq('id', mobilId);
         
-        bootstrap.Modal.getInstance(modal).hide();
+        const bsModal = bootstrap.Modal.getInstance(modal);
+        if (bsModal) bsModal.hide();
+        
+        document.getElementById('rentalForm').reset();
+        
         await loadRentals();
         await loadCars();
         await loadDashboard();
         
+        alert('✅ Penyewaan berhasil dibuat!');
         console.log('✅ Rental created');
     } catch (err) {
         console.error('❌ Save rental error:', err);
@@ -832,6 +888,7 @@ async function completeRental(id) {
         await loadCars();
         await loadDashboard();
         
+        alert('✅ Pengembalian berhasil!');
         console.log('✅ Rental completed');
     } catch (err) {
         console.error('❌ Complete rental error:', err);
