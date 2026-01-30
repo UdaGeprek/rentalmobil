@@ -952,44 +952,60 @@
         </div>
     </div>
 
-    <!-- Car Modal -->
-    <div class="modal fade" id="carModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Tambah Mobil Baru</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+<!-- Car Modal -->
+<div class="modal fade" id="carModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tambah Mobil Baru</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Merek</label>
+                    <select class="form-control form-select">
+                        <option value="">Pilih Merek</option>
+                        <option value="Toyota">Toyota</option>
+                        <option value="Honda">Honda</option>
+                        <option value="Mitsubishi">Mitsubishi</option>
+                        <option value="Daihatsu">Daihatsu</option>
+                        <option value="Suzuki">Suzuki</option>
+                    </select>
                 </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Merek</label>
-                        <select class="form-control form-select">
-                            <option>Toyota</option>
-                            <option>Honda</option>
-                            <option>Mitsubishi</option>
-                            <option>Suzuki</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Model</label>
-                        <input type="text" class="form-control" placeholder="Contoh: Camry, Civic">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Nomor Polisi</label>
-                        <input type="text" class="form-control" placeholder="B 1234 ABC">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Harga per Hari</label>
-                        <input type="number" class="form-control" placeholder="500000">
-                    </div>
+                <div class="mb-3">
+                    <label class="form-label">Model</label>
+                    <input type="text" class="form-control" placeholder="Contoh: Camry, Civic">
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Simpan</button>
+                <div class="mb-3">
+                    <label class="form-label">Nomor Polisi</label>
+                    <input type="text" class="form-control" placeholder="B 1234 ABC">
                 </div>
+                <div class="mb-3">
+                    <label class="form-label">Harga per Hari</label>
+                    <input type="number" class="form-control" placeholder="500000">
+                </div>
+                
+                <!-- NEW: Image Upload -->
+                <div class="mb-3">
+                    <label class="form-label">Foto Mobil</label>
+                    <input type="file" id="carImageInput" class="form-control" accept="image/*">
+                    <small class="text-muted">Format: JPG, PNG, max 2MB</small>
+                </div>
+                
+                <!-- NEW: Image Preview -->
+                <div id="imagePreviewContainer" style="display: none; margin-top: 10px;">
+                    <label class="form-label">Preview:</label>
+                    <img id="imagePreview" src="" alt="Preview" style="width: 100%; max-height: 200px; object-fit: contain; border: 1px solid #ddd; border-radius: 8px;">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary" onclick="saveCar()">Simpan</button>
             </div>
         </div>
     </div>
+</div>
+
 
     <!-- Customer Modal -->
     <div class="modal fade" id="customerModal" tabindex="-1">
