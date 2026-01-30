@@ -1,4 +1,9 @@
 // ============================================
+// GLOBAL VARIABLES
+// ============================================
+let supabase;
+
+// ============================================
 // WAIT FOR DOM & LIBRARIES
 // ============================================
 window.addEventListener('DOMContentLoaded', function() {
@@ -50,6 +55,12 @@ function setupEventListeners() {
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         loginForm.addEventListener('submit', handleLogin);
+    }
+    
+    // Image upload preview
+    const imageInput = document.getElementById('carImageInput');
+    if (imageInput) {
+        imageInput.addEventListener('change', handleImagePreview);
     }
     
     window.showPage = showPage;
@@ -227,6 +238,62 @@ function formatDateRange(start, end) {
 }
 
 // ============================================
+// IMAGE UPLOAD: PREVIEW
+// ============================================
+function handleImagePreview(event) {
+    const file = event.target.files[0];
+    const preview = document.getElementById('imagePreview');
+    const previewContainer = document.getElementById('imagePreviewContainer');
+    
+    if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            previewContainer.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    } else {
+        previewContainer.style.display = 'none';
+    }
+}
+
+// ============================================
+// IMAGE UPLOAD: TO SUPABASE STORAGE
+// ============================================
+async function uploadCarImage(file, carId) {
+    try {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${carId}_${Date.now()}.${fileExt}`;
+        const filePath = `car-images/${fileName}`;
+        
+        console.log('📤 Uploading image:', filePath);
+        
+        const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('mobil-images')
+            .upload(filePath, file, {
+                cacheControl: '3600',
+                upsert: false
+            });
+        
+        if (uploadError) {
+            console.error('❌ Upload error:', uploadError);
+            throw uploadError;
+        }
+        
+        const { data: publicData } = supabase.storage
+            .from('mobil-images')
+            .getPublicUrl(filePath);
+        
+        console.log('✅ Image uploaded:', publicData.publicUrl);
+        return publicData.publicUrl;
+        
+    } catch (err) {
+        console.error('❌ Upload failed:', err);
+        throw new Error('Gagal upload gambar: ' + err.message);
+    }
+}
+
+// ============================================
 // LOAD ALL DATA
 // ============================================
 async function loadAllData() {
@@ -239,7 +306,7 @@ async function loadAllData() {
 }
 
 // ============================================
-// DASHBOARD - FIXED
+// DASHBOARD
 // ============================================
 async function loadDashboard() {
     try {
@@ -254,9 +321,7 @@ async function loadDashboard() {
         const totalMobil = cars.length;
         const tersedia = cars.filter(c => c.status === 'tersedia').length;
         const disewa = cars.filter(c => c.status === 'disewa').length;
-        const maintenance = cars.filter(c => c.status === 'maintenance').length;
         
-        // FIX: Convert to number and filter valid data
         const pendapatan = rentals
             .filter(r => r.status === 'Selesai' || r.status === 'Sedang Berlangsung')
             .reduce((sum, r) => sum + (Number(r.totalharga) || 0), 0);
@@ -268,14 +333,6 @@ async function loadDashboard() {
         if (stats[3]) stats[3].textContent = formatCurrency(pendapatan);
 
         console.log('✅ Dashboard loaded');
-        console.log('📊 Stats:', { 
-            totalMobil, 
-            tersedia, 
-            disewa, 
-            maintenance,
-            pendapatan,
-            breakdown: `${tersedia} tersedia + ${disewa} disewa + ${maintenance} maintenance = ${totalMobil}`
-        });
     } catch (err) {
         console.error('❌ Load dashboard error:', err);
     }
@@ -414,7 +471,7 @@ async function saveCustomer() {
 }
 
 // ============================================
-// CRUD: MOBIL
+// CRUD: MOBIL (WITH IMAGE UPLOAD)
 // ============================================
 async function loadCars() {
     try {
@@ -435,6 +492,15 @@ async function loadCars() {
                 ${(data || []).map(m => `
                     <div class="col-md-4">
                         <div class="car-card">
+                            <div class="car-image" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)">
+                                ${m.image_url 
+                                    ? `<img src="${m.image_url}" alt="${m.nama}" style="width: 90%; height: auto; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4));">`
+                                    : `<div style="padding: 60px; text-align: center; color: #fff; opacity: 0.5;">📷 No Image</div>`
+                                }
+                                <span class="car-status ${m.status === 'tersedia' ? 'badge-available' : 'badge-rented'}">
+                                    ${m.status === 'tersedia' ? 'Tersedia' : 'Disewa'}
+                                </span>
+                            </div>
                             <div class="car-info">
                                 <div class="car-title">${m.nama}</div>
                                 <div class="car-plat">${m.plat_nomor}</div>
@@ -447,9 +513,6 @@ async function loadCars() {
                             <div class="car-price">
                                 ${formatCurrency(m.hargaperhari)} <span>/hari</span>
                             </div>
-                            <span class="car-status ${m.status === 'tersedia' ? 'badge-available' : 'badge-rented'}">
-                                ${m.status === 'tersedia' ? 'Tersedia' : 'Disewa'}
-                            </span>
                             <div class="car-actions">
                                 <button class="btn btn-outline btn-sm" onclick="startEditCar('${m.id}')">Edit</button>
                                 ${m.status === 'tersedia' 
@@ -492,12 +555,18 @@ async function startEditCar(id) {
         modal.dataset.editId = data.id;
         modal.querySelector('.modal-title').textContent = 'Edit Mobil';
         
-        const selects = modal.querySelectorAll('select');
         const inputs = modal.querySelectorAll('input');
-        
         if (inputs[0]) inputs[0].value = data.nama;
         if (inputs[1]) inputs[1].value = data.plat_nomor;
         if (inputs[2]) inputs[2].value = data.hargaperhari;
+        
+        // Show current image if exists
+        const preview = document.getElementById('imagePreview');
+        const previewContainer = document.getElementById('imagePreviewContainer');
+        if (data.image_url && preview) {
+            preview.src = data.image_url;
+            previewContainer.style.display = 'block';
+        }
         
         const bsModal = new bootstrap.Modal(modal);
         bsModal.show();
@@ -518,6 +587,7 @@ async function saveCar() {
         const model = inputs[0]?.value.trim();
         const plat = inputs[1]?.value.trim();
         const harga = parseInt(inputs[2]?.value, 10);
+        const imageFile = document.getElementById('carImageInput')?.files[0];
         
         if (!model || !plat || !harga) {
             alert('Lengkapi semua data mobil!');
@@ -531,9 +601,12 @@ async function saveCar() {
             transmisi: 'Automatic',
             bahanbakar: 'Bensin',
             hargaperhari: harga,
-            status: 'tersedia'
+            status: editId ? undefined : 'tersedia'
         };
         
+        let carId = editId;
+        
+        // Insert or update car data first
         if (editId) {
             const { error } = await supabase
                 .from('mobil')
@@ -542,19 +615,47 @@ async function saveCar() {
             
             if (error) throw error;
         } else {
-            const { error } = await supabase
+            const { data: newCar, error } = await supabase
                 .from('mobil')
-                .insert(payload);
+                .insert({...payload, status: 'tersedia'})
+                .select()
+                .single();
             
             if (error) throw error;
+            carId = newCar.id;
+        }
+        
+        // Upload image if provided
+        if (imageFile && carId) {
+            const imageUrl = await uploadCarImage(imageFile, carId);
+            
+            // Update car with image URL
+            await supabase
+                .from('mobil')
+                .update({ image_url: imageUrl })
+                .eq('id', carId);
+            
+            // Save to gambar_mobil table
+            await supabase
+                .from('gambar_mobil')
+                .insert({
+                    mobilid: carId,
+                    url: imageUrl,
+                    is_primary: true
+                });
         }
         
         bootstrap.Modal.getInstance(modal).hide();
         delete modal.dataset.editId;
+        
+        // Reset form
+        modal.querySelectorAll('input').forEach(input => input.value = '');
+        document.getElementById('imagePreviewContainer').style.display = 'none';
+        
         await loadCars();
         await loadDashboard();
         
-        console.log('✅ Car saved');
+        console.log('✅ Car saved with image');
     } catch (err) {
         console.error('❌ Save car error:', err);
         alert('Gagal simpan mobil: ' + err.message);
@@ -673,10 +774,10 @@ async function saveRental() {
             .limit(1)
             .single();
         
-        const lastNum = lastInv ? parseInt(lastInv.invoice.slice(-4)) : 0;
+        const lastNum = lastInv ? parseInt(lastInv.invoice.split('-').pop()) : 0;
         const invoice = `INV-${dateStr}-${String(lastNum + 1).padStart(4, '0')}`;
         
-        const { error: rentErr } = await supabase
+        const { error } = await supabase
             .from('penyewaan')
             .insert({
                 invoice,
@@ -684,13 +785,11 @@ async function saveRental() {
                 mobilid: mobilId,
                 tanggalsewa: tanggalSewa,
                 tanggalkembali: tanggalKembali,
-                durasihari: days,
-                hargaperhari: harga,
                 totalharga: total,
                 status: 'Sedang Berlangsung'
             });
         
-        if (rentErr) throw rentErr;
+        if (error) throw error;
         
         await supabase
             .from('mobil')
@@ -698,7 +797,9 @@ async function saveRental() {
             .eq('id', mobilId);
         
         bootstrap.Modal.getInstance(modal).hide();
-        await Promise.all([loadRentals(), loadCars(), loadDashboard()]);
+        await loadRentals();
+        await loadCars();
+        await loadDashboard();
         
         console.log('✅ Rental created');
     } catch (err) {
@@ -708,16 +809,14 @@ async function saveRental() {
 }
 
 async function completeRental(id) {
-    if (!confirm('Tandai penyewaan ini sebagai selesai?')) return;
+    if (!confirm('Konfirmasi pengembalian mobil?')) return;
     
     try {
-        const { data, error: fetchErr } = await supabase
+        const { data: rental } = await supabase
             .from('penyewaan')
             .select('mobilid')
             .eq('id', id)
             .single();
-        
-        if (fetchErr || !data) throw fetchErr;
         
         await supabase
             .from('penyewaan')
@@ -727,15 +826,15 @@ async function completeRental(id) {
         await supabase
             .from('mobil')
             .update({ status: 'tersedia' })
-            .eq('id', data.mobilid);
+            .eq('id', rental.mobilid);
         
-        await Promise.all([loadRentals(), loadCars(), loadDashboard()]);
+        await loadRentals();
+        await loadCars();
+        await loadDashboard();
         
         console.log('✅ Rental completed');
     } catch (err) {
         console.error('❌ Complete rental error:', err);
-        alert('Gagal selesaikan penyewaan: ' + err.message);
+        alert('Gagal selesaikan penyewaan!');
     }
 }
-
-console.log('📜 Script loaded, waiting for DOM...');
